@@ -1575,10 +1575,10 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     return false;
   }
   
-  // Helper function to check if a tile is part of a building that needs parking lot (stadium, hospital, power_plant, industrial)
+  // Helper function to check if a tile is part of a building that needs parking lot (stadium, hospital, power_plant, industrial, space_program)
   function isPartOfParkingLotBuilding(gridX: number, gridY: number): boolean {
     const maxSize = 4; // Maximum building size (airport is 4x4)
-    const parkingLotBuildings: BuildingType[] = ['stadium', 'hospital', 'power_plant', 'factory_small', 'factory_medium', 'factory_large', 'warehouse'];
+    const parkingLotBuildings: BuildingType[] = ['stadium', 'hospital', 'power_plant', 'space_program', 'factory_small', 'factory_medium', 'factory_large', 'warehouse'];
     
     for (let dy = 0; dy < maxSize; dy++) {
       for (let dx = 0; dx < maxSize; dx++) {
@@ -1626,8 +1626,9 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     const isPartOfBuilding = tile.building.type === 'empty' && isPartOfMultiTileBuilding(tile.x, tile.y);
     const isBuilding = isDirectBuilding || isPartOfBuilding;
     
-    // Check if this tile is part of a parking lot building (stadium, hospital, power_plant, industrial)
+    // Check if this tile is part of a parking lot building (stadium, hospital, power_plant, space_program, industrial)
     const isParkingLot = (tile.building.type === 'stadium' || tile.building.type === 'hospital' || tile.building.type === 'power_plant' ||
+                          tile.building.type === 'space_program' ||
                           tile.building.type === 'factory_small' || tile.building.type === 'factory_medium' || 
                           tile.building.type === 'factory_large' || tile.building.type === 'warehouse') ||
                          (tile.building.type === 'empty' && isPartOfParkingLotBuilding(tile.x, tile.y));
@@ -1911,7 +1912,7 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
       // Larger buildings need bigger sprites
       if (buildingType === 'power_plant') sizeMultiplier = 2.25; // Scaled down 10% from 2.5
       else if (buildingType === 'stadium') sizeMultiplier = 2.8; // Scaled down 20% from 3.5
-      else if (buildingType === 'space_program') sizeMultiplier = 2.8; // 3x3 building, same as stadium
+      else if (buildingType === 'space_program') sizeMultiplier = 2.94; // 3x3 building, scaled up 5% from 2.8
       else if (buildingType === 'university') sizeMultiplier = 2.8;
       else if (buildingType === 'hospital') sizeMultiplier = 2.25; // 2x2 building
       else if (buildingType === 'school') sizeMultiplier = 2.25; // 2x2 building
@@ -1944,6 +1945,9 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
       }
       if (buildingType === 'stadium') {
         drawY += h * 1.0; // Shift stadium down more
+      }
+      if (buildingType === 'space_program') {
+        drawY += h * 1.0; // Shift space program down more, same as stadium
       }
       if (buildingType === 'water_tower') {
         drawY -= h * 0.1; // Shift water tower upward slightly

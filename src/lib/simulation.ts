@@ -1102,14 +1102,15 @@ function canPlaceMultiTileBuilding(
     return false;
   }
   
-  // Check all tiles are available (grass or empty, not water)
+  // Check all tiles are available (grass, empty, tree, or road - not water or other buildings)
   for (let dy = 0; dy < height; dy++) {
     for (let dx = 0; dx < width; dx++) {
       const tile = grid[y + dy]?.[x + dx];
       if (!tile) return false;
       if (tile.building.type === 'water') return false;
-      // Can't build on existing buildings (except grass/trees)
-      if (tile.building.type !== 'grass' && tile.building.type !== 'tree' && tile.building.type !== 'empty') {
+      // Can build on grass, trees, empty tiles (from other multi-tile buildings), or roads
+      // Roads will be replaced by the multi-tile building
+      if (tile.building.type !== 'grass' && tile.building.type !== 'tree' && tile.building.type !== 'empty' && tile.building.type !== 'road') {
         return false;
       }
     }

@@ -64,6 +64,7 @@ const BUILDING_IMAGES: Partial<Record<BuildingType, { src: string; tileWidth: nu
   power_plant: { src: '/assets/buildings/powerplant.png', tileWidth: 2, tileHeight: 2 },
   // Special buildings
   stadium: { src: '/assets/buildings/stadium.png', tileWidth: 3, tileHeight: 3 },
+  space_program: { src: '/assets/buildings/space.png', tileWidth: 3, tileHeight: 3 },
 };
 
 // Image-based building component

@@ -53,6 +53,7 @@ const toolBuildingMap: Partial<Record<Tool, BuildingType>> = {
   water_tower: 'water_tower',
   stadium: 'stadium',
   airport: 'airport',
+  space_program: 'space_program',
 };
 
 const toolZoneMap: Partial<Record<Tool, ZoneType>> = {
