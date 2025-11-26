@@ -54,7 +54,7 @@ const BUILDING_IMAGES: Partial<Record<BuildingType, { src: string; tileWidth: nu
   hospital: { src: '/assets/buildings/hospital.png', tileWidth: 1, tileHeight: 1, scale: 0.56, verticalOffset: 15 },
   park: { src: '/assets/buildings/park.png', tileWidth: 1, tileHeight: 1 },
   police_station: { src: '/assets/buildings/police_station.png', tileWidth: 1, tileHeight: 1 },
-  school: { src: '/assets/buildings/school.png', tileWidth: 1, tileHeight: 1 },
+  school: { src: '/assets/buildings/school.png', tileWidth: 2, tileHeight: 2 },
   university: { src: '/assets/buildings/university.png', tileWidth: 3, tileHeight: 2 },
   // Utilities
   water_tower: { src: '/assets/buildings/watertower.png', tileWidth: 1, tileHeight: 1 },

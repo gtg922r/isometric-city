@@ -51,6 +51,94 @@ const TILE_WIDTH = 64;
 const HEIGHT_RATIO = 0.65;
 const TILE_HEIGHT = TILE_WIDTH * HEIGHT_RATIO;
 
+type CarDirection = 'north' | 'east' | 'south' | 'west';
+
+type Car = {
+  id: number;
+  tileX: number;
+  tileY: number;
+  direction: CarDirection;
+  progress: number;
+  speed: number;
+  age: number;
+  maxAge: number;
+  color: string;
+  laneOffset: number;
+};
+
+type DirectionMeta = {
+  step: { x: number; y: number };
+  vec: { dx: number; dy: number };
+  angle: number;
+  normal: { nx: number; ny: number };
+};
+
+type WorldRenderState = {
+  grid: Tile[][];
+  gridSize: number;
+  offset: { x: number; y: number };
+  zoom: number;
+};
+
+const CAR_COLORS = ['#f87171', '#fbbf24', '#34d399', '#60a5fa', '#c084fc'];
+
+function createDirectionMeta(step: { x: number; y: number }, vec: { dx: number; dy: number }): DirectionMeta {
+  const length = Math.hypot(vec.dx, vec.dy) || 1;
+  return {
+    step,
+    vec,
+    angle: Math.atan2(vec.dy, vec.dx),
+    normal: { nx: -vec.dy / length, ny: vec.dx / length },
+  };
+}
+
+const DIRECTION_META: Record<CarDirection, DirectionMeta> = {
+  north: createDirectionMeta({ x: -1, y: 0 }, { dx: -TILE_WIDTH / 2, dy: -TILE_HEIGHT / 2 }),
+  east: createDirectionMeta({ x: 0, y: -1 }, { dx: TILE_WIDTH / 2, dy: -TILE_HEIGHT / 2 }),
+  south: createDirectionMeta({ x: 1, y: 0 }, { dx: TILE_WIDTH / 2, dy: TILE_HEIGHT / 2 }),
+  west: createDirectionMeta({ x: 0, y: 1 }, { dx: -TILE_WIDTH / 2, dy: TILE_HEIGHT / 2 }),
+};
+
+const OPPOSITE_DIRECTION: Record<CarDirection, CarDirection> = {
+  north: 'south',
+  east: 'west',
+  south: 'north',
+  west: 'east',
+};
+
+function getOppositeDirection(direction: CarDirection): CarDirection {
+  return OPPOSITE_DIRECTION[direction];
+}
+
+function isRoadTile(gridData: Tile[][], gridSizeValue: number, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= gridSizeValue || y >= gridSizeValue) return false;
+  return gridData[y][x].building.type === 'road';
+}
+
+function getDirectionOptions(gridData: Tile[][], gridSizeValue: number, x: number, y: number): CarDirection[] {
+  const options: CarDirection[] = [];
+  if (isRoadTile(gridData, gridSizeValue, x - 1, y)) options.push('north');
+  if (isRoadTile(gridData, gridSizeValue, x, y - 1)) options.push('east');
+  if (isRoadTile(gridData, gridSizeValue, x + 1, y)) options.push('south');
+  if (isRoadTile(gridData, gridSizeValue, x, y + 1)) options.push('west');
+  return options;
+}
+
+function pickNextDirection(
+  previousDirection: CarDirection,
+  gridData: Tile[][],
+  gridSizeValue: number,
+  x: number,
+  y: number
+): CarDirection | null {
+  const options = getDirectionOptions(gridData, gridSizeValue, x, y);
+  if (options.length === 0) return null;
+  const incoming = getOppositeDirection(previousDirection);
+  const filtered = options.filter(dir => dir !== incoming);
+  const pool = filtered.length > 0 ? filtered : options;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 // Convert grid coordinates to screen coordinates (isometric)
 function gridToScreen(x: number, y: number, offsetX: number, offsetY: number): { screenX: number; screenY: number } {
   const screenX = (x - y) * (TILE_WIDTH / 2) + offsetX;
@@ -1170,6 +1258,37 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     ctx.restore();
   }, [grid, gridSize, offset, zoom, hoveredTile, selectedTile, overlayMode, imagesLoaded, canvasSize, dragStartTile, dragEndTile]);
   
+  // Helper function to check if a tile is part of a multi-tile building footprint
+  function isPartOfMultiTileBuilding(gridX: number, gridY: number): boolean {
+    // Check all possible origin positions that could have a multi-tile building covering this tile
+    // For a 2x2 building, check up to 1 tile away in each direction
+    // For a 3x3 building, check up to 2 tiles away
+    // For a 4x4 building, check up to 3 tiles away
+    const maxSize = 4; // Maximum building size
+    
+    for (let dy = 0; dy < maxSize; dy++) {
+      for (let dx = 0; dx < maxSize; dx++) {
+        const originX = gridX - dx;
+        const originY = gridY - dy;
+        
+        if (originX >= 0 && originX < gridSize && originY >= 0 && originY < gridSize) {
+          const originTile = grid[originY][originX];
+          const buildingSize = getBuildingSize(originTile.building.type);
+          
+          // Check if this tile is within the footprint of the building at origin
+          if (buildingSize.width > 1 || buildingSize.height > 1) {
+            if (gridX >= originX && gridX < originX + buildingSize.width &&
+                gridY >= originY && gridY < originY + buildingSize.height) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    
+    return false;
+  }
+  
   // Draw isometric tile base
   function drawIsometricTile(ctx: CanvasRenderingContext2D, x: number, y: number, tile: Tile, highlight: boolean) {
     const w = TILE_WIDTH;
@@ -1183,12 +1302,15 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
     
     const isPark = tile.building.type === 'park';
     // Check if this is a building (not grass, empty, water, road, tree, or park)
-    const isBuilding = !isPark &&
+    // Also check if it's part of a multi-tile building footprint
+    const isDirectBuilding = !isPark &&
       tile.building.type !== 'grass' &&
       tile.building.type !== 'empty' &&
       tile.building.type !== 'water' &&
       tile.building.type !== 'road' &&
       tile.building.type !== 'tree';
+    const isPartOfBuilding = tile.building.type === 'empty' && isPartOfMultiTileBuilding(tile.x, tile.y);
+    const isBuilding = isDirectBuilding || isPartOfBuilding;
     
     if (tile.building.type === 'water') {
       topColor = '#2563eb';
@@ -1457,6 +1579,7 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
       else if (buildingType === 'stadium') sizeMultiplier = 3.5;
       else if (buildingType === 'university') sizeMultiplier = 2.8;
       else if (buildingType === 'hospital') sizeMultiplier = 2.25; // 2x2 building
+      else if (buildingType === 'school') sizeMultiplier = 2.25; // 2x2 building
       else if (buildingType === 'fire_station') sizeMultiplier = 1.35; // Scaled down 25% from 1.8
       else if (buildingType === 'police_station') sizeMultiplier = 1.35; // Scaled down 25% from 1.8
       else if (buildingType === 'park') sizeMultiplier = 1.134; // Scaled down 40% total (30% + 10%) from 1.8
@@ -1479,6 +1602,12 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
       let drawY = baseY - imgHeight + h + imgHeight * 0.1 - verticalLift;
       if (buildingType === 'power_plant') {
         drawY += h * 0.35; // Lower the sprite slightly to sit closer to the ground
+      }
+      if (buildingType === 'school') {
+        drawY += h * 0.4; // Shift school downward
+      }
+      if (buildingType === 'stadium') {
+        drawY += h * 0.7; // Shift stadium down a lot
       }
       
       // Draw with crisp rendering
