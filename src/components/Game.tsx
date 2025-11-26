@@ -1064,7 +1064,7 @@ function SettingsPanel() {
 // Background color to filter
 const BACKGROUND_COLOR = { r: 255, g: 0, b: 0 };
 // Color distance threshold - pixels within this distance will be made transparent
-const COLOR_THRESHOLD = 200; // Adjust this value to be more/less aggressive (increased from 10 for better filtering)
+const COLOR_THRESHOLD = 170; // Adjust this value to be more/less aggressive (increased from 10 for better filtering)
 
 /**
  * Filters colors close to the background color from an image, making them transparent
@@ -2517,7 +2517,12 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
           const destHeight = destWidth * aspectRatio;
           
           // Position: center horizontally on tile/footprint, anchor bottom of sprite at tile bottom
-          const drawX = drawPosX + w / 2 - destWidth / 2;
+          let drawX = drawPosX + w / 2 - destWidth / 2;
+          
+          // Apply per-sprite horizontal offset adjustments
+          const spriteKey = BUILDING_TO_SPRITE[buildingType];
+          const horizontalOffset = (spriteKey && SPRITE_HORIZONTAL_OFFSETS[spriteKey]) ? SPRITE_HORIZONTAL_OFFSETS[spriteKey] * w : 0;
+          drawX += horizontalOffset;
           
           // Simple positioning: sprite bottom aligns with tile/footprint bottom
           // Add vertical push to compensate for transparent space at bottom of sprites
@@ -2531,9 +2536,6 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
             // Single-tile sprites also need push (sprites have transparent bottom padding)
             verticalPush = destHeight * 0.15;
           }
-          
-          // Apply per-sprite vertical offset adjustments
-          const spriteKey = BUILDING_TO_SPRITE[buildingType];
           const extraOffset = (spriteKey && SPRITE_VERTICAL_OFFSETS[spriteKey]) ? SPRITE_VERTICAL_OFFSETS[spriteKey] * h : 0;
           verticalPush += extraOffset;
           
@@ -2616,10 +2618,10 @@ function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile }: {
         const imgWidth = imgHeight * aspectRatio;
         
         let drawX = drawPosX + w / 2 - imgWidth / 2;
-        // Left offset for university
-        if (buildingType === 'university') {
-          drawX -= w * 0.3; // Shift left by 30% of tile width
-        }
+        // Apply horizontal offset from config (for university and others)
+        const spriteKey = BUILDING_TO_SPRITE[buildingType];
+        const horizontalOffset = (spriteKey && SPRITE_HORIZONTAL_OFFSETS[spriteKey]) ? SPRITE_HORIZONTAL_OFFSETS[spriteKey] * w : 0;
+        drawX += horizontalOffset;
         const baseY = isMultiTile ? drawPosY : y;
         const footprintDepth = isMultiTile ? buildingSize.width + buildingSize.height - 2 : 0;
         const verticalLift = footprintDepth > 0 ? footprintDepth * h * 0.3 : 0;

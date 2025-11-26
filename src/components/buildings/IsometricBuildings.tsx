@@ -39,7 +39,7 @@ const SPRITE_DIMENSIONS: Record<string, { width: number; height: number }> = {
 };
 
 // Mapping of building types to their PNG image paths and size multipliers
-const BUILDING_IMAGES: Partial<Record<BuildingType, { src: string; tileWidth: number; tileHeight: number; scale?: number; verticalOffset?: number; baseTileColor?: string }>> = {
+const BUILDING_IMAGES: Partial<Record<BuildingType, { src: string; tileWidth: number; tileHeight: number; scale?: number; verticalOffset?: number; horizontalOffset?: number; baseTileColor?: string }>> = {
   // Residential buildings (1x1)
   house_small: { src: '/assets/buildings/house_small.png', tileWidth: 1, tileHeight: 1, scale: 0.8, verticalOffset: 12, baseTileColor: '#8a8a8a' },
   house_medium: { src: '/assets/buildings/house_medium.png', tileWidth: 1, tileHeight: 1, scale: 0.8, verticalOffset: 12, baseTileColor: '#8a8a8a' },
@@ -65,7 +65,7 @@ const BUILDING_IMAGES: Partial<Record<BuildingType, { src: string; tileWidth: nu
   tennis: { src: '/assets/buildings/tennis.png', tileWidth: 1, tileHeight: 1, scale: 0.95 },
   police_station: { src: '/assets/buildings/police_station.png', tileWidth: 1, tileHeight: 1 },
   school: { src: '/assets/buildings/school.png', tileWidth: 2, tileHeight: 2 },
-  university: { src: '/assets/buildings/university.png', tileWidth: 3, tileHeight: 2 },
+  university: { src: '/assets/buildings/university.png', tileWidth: 3, tileHeight: 3, scale: 0.9, verticalOffset: 20, horizontalOffset: 15 },
   // Utilities
   water_tower: { src: '/assets/buildings/watertower.png', tileWidth: 1, tileHeight: 1 },
   power_plant: { src: '/assets/buildings/powerplant.png', tileWidth: 2, tileHeight: 2 },
@@ -82,9 +82,10 @@ const ImageBuilding: React.FC<{
   tileHeight?: number; // How many tiles tall this building spans
   alt: string;
   scale?: number; // Optional scale multiplier (default 1.0)
-  verticalOffset?: number; // Optional vertical offset in pixels (positive = up, negative = down)
+  verticalOffset?: number; // Optional vertical offset in pixels (positive = down, negative = up)
+  horizontalOffset?: number; // Optional horizontal offset in pixels (positive = right, negative = left)
   baseTileColor?: string; // Optional color for the base tile underneath
-}> = ({ src, size = 64, tileWidth = 1, tileHeight = 1, alt, scale = 1.0, verticalOffset = 0, baseTileColor }) => {
+}> = ({ src, size = 64, tileWidth = 1, tileHeight = 1, alt, scale = 1.0, verticalOffset = 0, horizontalOffset = 0, baseTileColor }) => {
   // Calculate image dimensions based on tile size
   // For multi-tile buildings, scale the image accordingly
   const scaledWidth = size * tileWidth;
@@ -138,7 +139,7 @@ const ImageBuilding: React.FC<{
           position: 'absolute',
           bottom: -scaledHeight * 0.1 + verticalOffset,
           left: '50%',
-          transform: 'translateX(-50%)',
+          transform: `translateX(calc(-50% + ${horizontalOffset}px))`,
         }}
         priority
       />
@@ -1052,7 +1053,7 @@ export const BuildingRenderer: React.FC<{
     // Check if we have a PNG image for this building type
     const imageConfig = BUILDING_IMAGES[buildingType];
     if (imageConfig) {
-      return <ImageBuilding src={imageConfig.src} size={size} tileWidth={imageConfig.tileWidth} tileHeight={imageConfig.tileHeight} alt={buildingType} scale={imageConfig.scale} verticalOffset={imageConfig.verticalOffset} baseTileColor={imageConfig.baseTileColor} />;
+      return <ImageBuilding src={imageConfig.src} size={size} tileWidth={imageConfig.tileWidth} tileHeight={imageConfig.tileHeight} alt={buildingType} scale={imageConfig.scale} verticalOffset={imageConfig.verticalOffset} horizontalOffset={imageConfig.horizontalOffset} baseTileColor={imageConfig.baseTileColor} />;
     }
     
     // Fallback to SVG-based buildings for types without images

@@ -1138,7 +1138,7 @@ const BUILDING_SIZES: Partial<Record<BuildingType, { width: number; height: numb
   school: { width: 2, height: 2 },
   stadium: { width: 3, height: 3 },
   museum: { width: 3, height: 3 },
-  university: { width: 3, height: 2 },
+  university: { width: 3, height: 3 },
   airport: { width: 4, height: 4 },
   space_program: { width: 3, height: 3 },
   park_large: { width: 3, height: 3 },

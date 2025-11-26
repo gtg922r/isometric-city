@@ -87,7 +87,7 @@ export const TOOL_INFO: Record<Tool, ToolInfo> = {
   fire_station: { name: 'Fire Station', cost: 500, description: 'Fight fires', size: 1 },
   hospital: { name: 'Hospital', cost: 1000, description: 'Improve health (2x2)', size: 2 },
   school: { name: 'School', cost: 400, description: 'Basic education (2x2)', size: 2 },
-  university: { name: 'University', cost: 2000, description: 'Higher education (3x2)', size: 3 },
+  university: { name: 'University', cost: 2000, description: 'Higher education (3x3)', size: 3 },
   park: { name: 'Small Park', cost: 150, description: 'Boost happiness and land value (1x1)', size: 1 },
   park_large: { name: 'Large Park', cost: 600, description: 'Large park (3x3)', size: 3 },
   tennis: { name: 'Tennis Court', cost: 200, description: 'Recreation facility', size: 1 },

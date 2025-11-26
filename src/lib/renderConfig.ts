@@ -92,6 +92,7 @@ export const SPRITE_VERTICAL_OFFSETS: Record<string, number> = {
   tennis: 0.10,         // Tennis court - push down ~10%
   water_tower: -0.30,   // Water tower - push up ~12px
   airport: -0.8,        // Airport - shifted down further
+  university: 0.25,      // University - push down ~25%
   // Add more as needed
 };
 
@@ -103,7 +104,7 @@ export const SPRITE_VERTICAL_OFFSETS: Record<string, number> = {
 // Values are multiplied by tile width (TILE_WIDTH) for consistent scaling.
 // ============================================================================
 export const SPRITE_HORIZONTAL_OFFSETS: Record<string, number> = {
-  university: -0.6,     // University - shift left significantly
+  university: 0.3,      // University - shift right ~30%
   // Add more as needed
 };
 
