@@ -1,6 +1,6 @@
 # Plan: UI Navigation and Keyboard Shortcut Discoverability
 
-## Phase 1: Mode Indication & Core Navigation
+## Phase 1: Mode Indication & Core Navigation [checkpoint: f218a9c]
 
 - [x] Task: Create `ShortcutTooltip` component and integrate with existing UI buttons [bfef1b0]
     - [ ] Write tests for `ShortcutTooltip` to ensure it renders shortcut labels correctly
@@ -13,7 +13,7 @@
 - [x] Task: Refine 'Escape' key behavior for mode resetting [068416d]
     - [ ] Write tests in `GameContext` or `useKeyboard` hook for Escape key logic
     - [ ] Implement robust Escape key handling to reset building/tool modes
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Mode Indication & Core Navigation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Mode Indication & Core Navigation' (Protocol in workflow.md) [f218a9c]
 
 ## Phase 2: Keyboard Shortcut Help Panel
 
