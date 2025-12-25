@@ -1,6 +1,6 @@
 # Plan: Simulation Dynamics Player Guide
 
-## Phase 1: Setup & Building Catalog
+## Phase 1: Setup & Building Catalog [checkpoint: 279c165]
 
 - [x] Task: Create `PLAYER_GUIDE.md` with initial directory structure and Overview [Red: Verify file missing] 49eceb6
 - [x] Task: Document Service Buildings (Police, Fire, Hospital, School) extracting data from `src/game/constants.ts` 920f1ae
