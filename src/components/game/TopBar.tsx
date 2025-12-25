@@ -20,6 +20,7 @@ import {
 import { copyShareUrl } from '@/lib/shareState';
 import { ShortcutTooltip } from '@/components/ui/ShortcutTooltip';
 import { KEYBOARD_SHORTCUTS } from './shortcuts';
+import { ModeIndicator } from './ModeIndicator';
 
 // ============================================================================
 // TIME OF DAY ICON
@@ -217,6 +218,8 @@ export const TopBar = React.memo(function TopBar() {
             );
           })}
         </div>
+        
+        <ModeIndicator />
       </div>
       
       <div className="flex items-center gap-8">
