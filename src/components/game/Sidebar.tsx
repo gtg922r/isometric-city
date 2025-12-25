@@ -26,6 +26,10 @@ import { KEYBOARD_SHORTCUTS } from './shortcuts';
 function getToolShortcut(tool: Tool | string): string | undefined {
   if (tool === 'bulldoze') return KEYBOARD_SHORTCUTS.BULLDOZE.label;
   if (tool === 'select') return KEYBOARD_SHORTCUTS.SELECT.label;
+  if (tool === 'road') return KEYBOARD_SHORTCUTS.ROAD.label;
+  if (tool === 'zone_residential') return KEYBOARD_SHORTCUTS.RESIDENTIAL.label;
+  if (tool === 'zone_commercial') return KEYBOARD_SHORTCUTS.COMMERCIAL.label;
+  if (tool === 'zone_industrial') return KEYBOARD_SHORTCUTS.INDUSTRIAL.label;
   return undefined;
 }
 
