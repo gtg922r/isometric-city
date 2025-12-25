@@ -20,6 +20,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { ShortcutTooltip } from '@/components/ui/ShortcutTooltip';
+import { KEYBOARD_SHORTCUTS } from './shortcuts';
+
+function getToolShortcut(tool: Tool | string): string | undefined {
+  if (tool === 'bulldoze') return KEYBOARD_SHORTCUTS.BULLDOZE.label;
+  if (tool === 'select') return KEYBOARD_SHORTCUTS.SELECT.label;
+  return undefined;
+}
 
 // Hover Submenu Component for collapsible tool categories
 // Implements triangle-rule safe zone for forgiving cursor navigation
@@ -200,23 +208,26 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
               if (!info) return null;
               const isSelected = selectedTool === tool;
               const canAfford = money >= info.cost;
+              const shortcut = getToolShortcut(tool);
+              
+              const tooltipContent = `${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`;
               
               return (
-                <Button
-                  key={tool}
-                  onClick={() => onSelectTool(tool)}
-                  disabled={!canAfford && info.cost > 0}
-                  variant={isSelected ? 'default' : 'ghost'}
-                  className={`w-full justify-start gap-2 px-3 py-2 h-auto text-sm transition-all duration-150 ${
-                    isSelected ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted/60'
-                  }`}
-                  title={`${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
-                >
-                  <span className="flex-1 text-left truncate">{info.name}</span>
-                  {info.cost > 0 && (
-                    <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
-                  )}
-                </Button>
+                <ShortcutTooltip key={tool} content={tooltipContent} shortcut={shortcut}>
+                  <Button
+                    onClick={() => onSelectTool(tool)}
+                    disabled={!canAfford && info.cost > 0}
+                    variant={isSelected ? 'default' : 'ghost'}
+                    className={`w-full justify-start gap-2 px-3 py-2 h-auto text-sm transition-all duration-150 ${
+                      isSelected ? 'bg-primary text-primary-foreground shadow-sm' : 'hover:bg-muted/60'
+                    }`}
+                  >
+                    <span className="flex-1 text-left truncate">{info.name}</span>
+                    {info.cost > 0 && (
+                      <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
+                    )}
+                  </Button>
+                </ShortcutTooltip>
               );
             })}
           </div>
@@ -342,39 +353,41 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
         <div className="flex items-center justify-between">
           <span className="text-sidebar-foreground font-bold tracking-tight">ISOCITY</span>
           <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={openCommandMenu}
-              title="Search (⌘K)"
-              className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
-            >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </Button>
-            {onExit && (
+            <ShortcutTooltip content="Search" shortcut={KEYBOARD_SHORTCUTS.SEARCH.label}>
               <Button
                 variant="ghost"
                 size="icon-sm"
-                onClick={() => setShowExitDialog(true)}
-                title="Exit to Main Menu"
+                onClick={openCommandMenu}
                 className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
               >
                 <svg 
-                  className="w-4 h-4 -scale-x-100" 
+                  className="w-4 h-4" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </Button>
+            </ShortcutTooltip>
+            {onExit && (
+              <ShortcutTooltip content="Exit to Main Menu">
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setShowExitDialog(true)}
+                  className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
+                >
+                  <svg 
+                    className="w-4 h-4 -scale-x-100" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </Button>
+              </ShortcutTooltip>
             )}
           </div>
         </div>
@@ -393,23 +406,26 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                 if (!info) return null;
                 const isSelected = selectedTool === tool;
                 const canAfford = stats.money >= info.cost;
+                const shortcut = getToolShortcut(tool);
+                
+                const tooltipContent = `${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`;
                 
                 return (
-                  <Button
-                    key={tool}
-                    onClick={() => setTool(tool)}
-                    disabled={!canAfford && info.cost > 0}
-                    variant={isSelected ? 'default' : 'ghost'}
-                    className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm ${
-                      isSelected ? 'bg-primary text-primary-foreground' : ''
-                    }`}
-                    title={`${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`}
-                  >
-                    <span className="flex-1 text-left truncate">{info.name}</span>
-                    {info.cost > 0 && (
-                      <span className="text-xs opacity-60">${info.cost}</span>
-                    )}
-                  </Button>
+                  <ShortcutTooltip key={tool} content={tooltipContent} shortcut={shortcut}>
+                    <Button
+                      onClick={() => setTool(tool)}
+                      disabled={!canAfford && info.cost > 0}
+                      variant={isSelected ? 'default' : 'ghost'}
+                      className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm ${
+                        isSelected ? 'bg-primary text-primary-foreground' : ''
+                      }`}
+                    >
+                      <span className="flex-1 text-left truncate">{info.name}</span>
+                      {info.cost > 0 && (
+                        <span className="text-xs opacity-60">${info.cost}</span>
+                      )}
+                    </Button>
+                  </ShortcutTooltip>
                 );
               })}
             </div>
@@ -448,16 +464,16 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
             { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, label: 'Advisors' },
             { panel: 'settings' as const, icon: <SettingsIcon size={16} />, label: 'Settings' },
           ].map(({ panel, icon, label }) => (
-            <Button
-              key={panel}
-              onClick={() => setActivePanel(activePanel === panel ? 'none' : panel)}
-              variant={activePanel === panel ? 'default' : 'ghost'}
-              size="icon-sm"
-              className="w-full"
-              title={label}
-            >
-              {icon}
-            </Button>
+            <ShortcutTooltip key={panel} content={label}>
+              <Button
+                onClick={() => setActivePanel(activePanel === panel ? 'none' : panel)}
+                variant={activePanel === panel ? 'default' : 'ghost'}
+                size="icon-sm"
+                className="w-full"
+              >
+                {icon}
+              </Button>
+            </ShortcutTooltip>
           ))}
         </div>
       </div>
