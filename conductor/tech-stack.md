@@ -21,4 +21,5 @@
 ## Development Tools
 - **Linting:** ESLint
 - **Formatting:** Prettier (via standard Tailwind/ESLint integrations)
+- **Testing:** Vitest and React Testing Library (TDD workflow)
 - **Scripts:** Custom bash scripts for asset processing (e.g., `scripts/crop-screenshots.sh`)
