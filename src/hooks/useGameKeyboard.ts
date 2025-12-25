@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { OverlayMode } from '@/components/game/types';
+import { TOOL_CATEGORIES } from '@/components/game/categories';
 
 interface UseGameKeyboardProps {
   overlayMode: OverlayMode;
@@ -73,6 +74,21 @@ export function useGameKeyboard({
       } else if (e.key === '?') {
         e.preventDefault();
         onToggleHelp?.();
+      } else {
+        // Check category shortcuts
+        const category = TOOL_CATEGORIES.find(c => c.shortcut === e.key.toLowerCase());
+        if (category) {
+          e.preventDefault();
+          const currentIndex = category.tools.indexOf(state.selectedTool);
+          if (currentIndex === -1) {
+            // Not currently in this category, select first tool
+            setTool(category.tools[0]);
+          } else {
+            // Cycle to next tool
+            const nextIndex = (currentIndex + 1) % category.tools.length;
+            setTool(category.tools[nextIndex]);
+          }
+        }
       }
     };
 

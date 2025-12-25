@@ -205,6 +205,23 @@ describe('useGameKeyboard', () => {
     expect(mockSetTool).toHaveBeenCalledWith('subway');
   });
 
+  it('cycles services tools on S', () => {
+    // First press: select first tool
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+    triggerKeyDown('s');
+    expect(mockSetTool).toHaveBeenCalledWith('police_station');
+
+    // Second press (if first tool selected): select second tool
+    mockState.selectedTool = 'police_station';
+    triggerKeyDown('s');
+    expect(mockSetTool).toHaveBeenCalledWith('fire_station');
+  });
+
   it('calls onToggleHelp on "?"', () => {
     const mockOnToggleHelp = vi.fn();
     runHook({
