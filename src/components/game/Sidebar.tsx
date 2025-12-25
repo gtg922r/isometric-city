@@ -53,6 +53,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   money,
   onSelectTool,
   forceOpenUpward = false,
+  shortcut,
 }: {
   label: string;
   tools: Tool[];
@@ -60,6 +61,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   money: number;
   onSelectTool: (tool: Tool) => void;
   forceOpenUpward?: boolean;
+  shortcut?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, buttonHeight: 0, openUpward: false });
@@ -214,8 +216,9 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
           onMouseEnter={handleSubmenuEnter}
           onMouseLeave={handleSubmenuLeave}
         >
-          <div className="px-3 py-2 border-b border-sidebar-border/50 bg-muted/30">
+          <div className="px-3 py-2 border-b border-sidebar-border/50 bg-muted/30 flex justify-between items-center">
             <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">{label}</span>
+            {shortcut && <span className="text-[10px] font-mono text-muted-foreground opacity-70">({shortcut.toUpperCase()})</span>}
           </div>
           <div className="p-1.5 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
             {tools.map(tool => {
@@ -223,12 +226,12 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
               if (!info) return null;
               const isSelected = selectedTool === tool;
               const canAfford = money >= info.cost;
-              const shortcut = getToolShortcut(tool);
+              const toolShortcut = getToolShortcut(tool); // Keep getting tool shortcut for tooltip if needed, but remove from text
               
               const tooltipContent = `${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`;
               
               return (
-                <ShortcutTooltip key={tool} content={tooltipContent} shortcut={shortcut}>
+                <ShortcutTooltip key={tool} content={tooltipContent}>
                   <Button
                     onClick={() => onSelectTool(tool)}
                     disabled={!canAfford && info.cost > 0}
@@ -239,7 +242,6 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
                   >
                     <span className="flex-1 text-left truncate">
                       {info.name}
-                      {shortcut && <span className="ml-1.5 text-[10px] opacity-60 font-mono">({shortcut})</span>}
                     </span>
                     {info.cost > 0 && (
                       <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
@@ -417,7 +419,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
         
         {/* Submenu categories */}
         <div className="px-2 flex flex-col gap-0.5">
-          {submenuCategories.map(({ key, label, tools, forceOpenUpward }) => (
+          {submenuCategories.map(({ key, label, tools, forceOpenUpward, shortcut }) => (
             <HoverSubmenu
               key={key}
               label={label}
@@ -426,6 +428,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               money={stats.money}
               onSelectTool={setTool}
               forceOpenUpward={forceOpenUpward}
+              shortcut={shortcut}
             />
           ))}
         </div>
