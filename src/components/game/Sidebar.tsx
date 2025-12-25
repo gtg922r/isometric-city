@@ -22,14 +22,25 @@ import {
 } from '@/components/ui/dialog';
 import { ShortcutTooltip } from '@/components/ui/ShortcutTooltip';
 import { KEYBOARD_SHORTCUTS } from './shortcuts';
+import { TOOL_CATEGORIES } from './categories';
 
 function getToolShortcut(tool: Tool | string): string | undefined {
   if (tool === 'bulldoze') return KEYBOARD_SHORTCUTS.BULLDOZE.label;
   if (tool === 'select') return KEYBOARD_SHORTCUTS.SELECT.label;
   if (tool === 'road') return KEYBOARD_SHORTCUTS.ROAD.label;
+  if (tool === 'rail') return KEYBOARD_SHORTCUTS.RAIL.label;
+  if (tool === 'subway') return KEYBOARD_SHORTCUTS.SUBWAY.label;
   if (tool === 'zone_residential') return KEYBOARD_SHORTCUTS.RESIDENTIAL.label;
   if (tool === 'zone_commercial') return KEYBOARD_SHORTCUTS.COMMERCIAL.label;
   if (tool === 'zone_industrial') return KEYBOARD_SHORTCUTS.INDUSTRIAL.label;
+  if (tool === 'zone_dezone') return KEYBOARD_SHORTCUTS.DEZONE.label;
+  
+  for (const cat of TOOL_CATEGORIES) {
+    if (cat.shortcut && cat.tools.includes(tool as Tool)) {
+      return cat.shortcut.toUpperCase();
+    }
+  }
+  
   return undefined;
 }
 
@@ -306,50 +317,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
   }), []);
   
   // Submenu categories (hover to expand) - includes all new assets from main
-  const submenuCategories = useMemo(() => [
-    { 
-      key: 'services', 
-      label: 'Services', 
-      tools: ['police_station', 'fire_station', 'hospital', 'school', 'university'] as Tool[]
-    },
-    { 
-      key: 'parks', 
-      label: 'Parks', 
-      tools: ['park', 'park_large', 'tennis', 'playground_small', 'playground_large', 'community_garden', 'pond_park', 'park_gate', 'greenhouse_garden'] as Tool[]
-    },
-    { 
-      key: 'sports', 
-      label: 'Sports', 
-      tools: ['basketball_courts', 'soccer_field_small', 'baseball_field_small', 'football_field', 'baseball_stadium', 'swimming_pool', 'skate_park', 'bleachers_field'] as Tool[]
-    },
-    { 
-      key: 'recreation', 
-      label: 'Recreation', 
-      tools: ['mini_golf_course', 'go_kart_track', 'amphitheater', 'roller_coaster_small', 'campground', 'cabin_house', 'mountain_lodge', 'mountain_trailhead'] as Tool[]
-    },
-    { 
-      key: 'waterfront', 
-      label: 'Waterfront', 
-      tools: ['marina_docks_small', 'pier_large'] as Tool[]
-    },
-    { 
-      key: 'community', 
-      label: 'Community', 
-      tools: ['community_center', 'animal_pens_farm', 'office_building_small'] as Tool[]
-    },
-    { 
-      key: 'utilities', 
-      label: 'Utilities', 
-      tools: ['power_plant', 'water_tower', 'subway_station', 'rail_station'] as Tool[],
-      forceOpenUpward: true
-    },
-    { 
-      key: 'special', 
-      label: 'Special', 
-      tools: ['stadium', 'museum', 'airport', 'space_program', 'city_hall', 'amusement_park'] as Tool[],
-      forceOpenUpward: true
-    },
-  ], []);
+  const submenuCategories = useMemo(() => TOOL_CATEGORIES, []);
   
   return (
     <div className="w-56 bg-sidebar border-r border-sidebar-border flex flex-col h-full relative z-40">

@@ -9,6 +9,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { KEYBOARD_SHORTCUTS } from './shortcuts';
+import { TOOL_CATEGORIES } from './categories';
 
 interface ShortcutsHelpPanelProps {
   open: boolean;
@@ -23,10 +24,20 @@ export function ShortcutsHelpPanel({ open, onOpenChange }: ShortcutsHelpPanelPro
         { label: 'Select / Inspect', key: KEYBOARD_SHORTCUTS.SELECT.label },
         { label: 'Bulldoze', key: KEYBOARD_SHORTCUTS.BULLDOZE.label },
         { label: 'Road', key: KEYBOARD_SHORTCUTS.ROAD.label },
+        { label: 'Rail', key: KEYBOARD_SHORTCUTS.RAIL.label },
+        { label: 'Subway', key: KEYBOARD_SHORTCUTS.SUBWAY.label },
         { label: 'Residential Zone', key: KEYBOARD_SHORTCUTS.RESIDENTIAL.label },
         { label: 'Commercial Zone', key: KEYBOARD_SHORTCUTS.COMMERCIAL.label },
         { label: 'Industrial Zone', key: KEYBOARD_SHORTCUTS.INDUSTRIAL.label },
+        { label: 'Dezone', key: KEYBOARD_SHORTCUTS.DEZONE.label },
       ],
+    },
+    {
+      title: 'Categories (Cycle)',
+      items: TOOL_CATEGORIES.filter(c => c.shortcut).map(c => ({
+        label: c.label,
+        key: c.shortcut!.toUpperCase()
+      }))
     },
     {
       title: 'Game Controls',

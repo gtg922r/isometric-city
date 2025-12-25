@@ -10,7 +10,10 @@ describe('ShortcutsHelpPanel', () => {
     expect(screen.getByText('Bulldoze')).toBeInTheDocument();
     expect(screen.getByText('B')).toBeInTheDocument();
     expect(screen.getByText('Pause / Unpause')).toBeInTheDocument();
-    expect(screen.getByText('P')).toBeInTheDocument();
+    
+    // 'P' is used for Pause and Parks
+    const pShortcuts = screen.getAllByText('P');
+    expect(pShortcuts.length).toBeGreaterThan(0);
   });
 
   it('does not render when closed', () => {
