@@ -4,6 +4,7 @@ import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { useGame } from '@/context/GameContext';
 import { Tool } from '@/types/game';
 import { useMobile } from '@/hooks/useMobile';
+import { useGameKeyboard } from '@/hooks/useGameKeyboard';
 import { MobileToolbar } from '@/components/mobile/MobileToolbar';
 import { MobileTopBar } from '@/components/mobile/MobileTopBar';
 
@@ -120,38 +121,13 @@ export default function Game({ onExit }: { onExit?: () => void }) {
     }, 0);
   }, [state.selectedTool]);
   
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in input fields
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return;
-      }
-
-      if (e.key === 'Escape') {
-        if (overlayMode !== 'none') {
-          setOverlayMode('none');
-        } else if (state.activePanel !== 'none') {
-          setActivePanel('none');
-        } else if (selectedTile) {
-          setSelectedTile(null);
-        } else if (state.selectedTool !== 'select') {
-          setTool('select');
-        }
-      } else if (e.key === 'b' || e.key === 'B') {
-        e.preventDefault();
-        setTool('bulldoze');
-      } else if (e.key === 'p' || e.key === 'P') {
-        e.preventDefault();
-        // Toggle pause/unpause: if paused (speed 0), resume to normal (speed 1)
-        // If running, pause (speed 0)
-        setSpeed(state.speed === 0 ? 1 : 0);
-      }
-    };
-    
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [state.activePanel, state.selectedTool, state.speed, selectedTile, setActivePanel, setTool, setSpeed, overlayMode]);
+  // Handle game keyboard shortcuts
+  useGameKeyboard({
+    overlayMode,
+    setOverlayMode,
+    selectedTile,
+    setSelectedTile,
+  });
 
   // Handle cheat code triggers
   useEffect(() => {

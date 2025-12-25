@@ -1,0 +1,123 @@
+import { renderHook } from '@testing-library/react';
+import { useGameKeyboard } from '../useGameKeyboard';
+import { Tool } from '@/types/game';
+
+// Mock dependencies
+const mockSetOverlayMode = vi.fn();
+const mockSetSelectedTile = vi.fn();
+const mockSetActivePanel = vi.fn();
+const mockSetTool = vi.fn();
+const mockSetSpeed = vi.fn();
+
+// Mock GameContext
+let mockState = {
+  activePanel: 'none',
+  selectedTool: 'select' as Tool,
+  speed: 1,
+};
+
+vi.mock('@/context/GameContext', () => ({
+  useGame: () => ({
+    state: mockState,
+    setActivePanel: mockSetActivePanel,
+    setTool: mockSetTool,
+    setSpeed: mockSetSpeed,
+  }),
+}));
+
+describe('useGameKeyboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockState = {
+      activePanel: 'none',
+      selectedTool: 'select',
+      speed: 1,
+    };
+  });
+
+  const runHook = (props: any) => {
+    renderHook(() => useGameKeyboard(props));
+  };
+
+  const triggerKeyDown = (key: string) => {
+    const event = new KeyboardEvent('keydown', { key });
+    window.dispatchEvent(event);
+  };
+
+  it('closes overlay mode on Escape', () => {
+    runHook({
+      overlayMode: 'subway',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('Escape');
+    expect(mockSetOverlayMode).toHaveBeenCalledWith('none');
+    expect(mockSetActivePanel).not.toHaveBeenCalled();
+  });
+
+  it('closes active panel on Escape if overlay is none', () => {
+    mockState.activePanel = 'budget';
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('Escape');
+    expect(mockSetOverlayMode).not.toHaveBeenCalled();
+    expect(mockSetActivePanel).toHaveBeenCalledWith('none');
+  });
+
+  it('deselects tile on Escape if no panel/overlay', () => {
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: { x: 0, y: 0 },
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('Escape');
+    expect(mockSetSelectedTile).toHaveBeenCalledWith(null);
+  });
+
+  it('resets tool to select on Escape if nothing else active', () => {
+    mockState.selectedTool = 'road';
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('Escape');
+    expect(mockSetTool).toHaveBeenCalledWith('select');
+  });
+
+  it('toggles pause on P', () => {
+    mockState.speed = 1;
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('p');
+    expect(mockSetSpeed).toHaveBeenCalledWith(0);
+  });
+
+  it('selects bulldoze on B', () => {
+    runHook({
+      overlayMode: 'none',
+      setOverlayMode: mockSetOverlayMode,
+      selectedTile: null,
+      setSelectedTile: mockSetSelectedTile,
+    });
+
+    triggerKeyDown('b');
+    expect(mockSetTool).toHaveBeenCalledWith('bulldoze');
+  });
+});
