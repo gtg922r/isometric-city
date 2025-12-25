@@ -7,7 +7,7 @@
 - [x] Task: Document Infrastructure mechanics (Roads, Power, Water connectivity rules) 920f1ae
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Building Catalog' (Protocol in workflow.md)
 
-## Phase 2: Zoning & Growth Mechanics
+## Phase 2: Zoning & Growth Mechanics [checkpoint: 92c4504]
 
 - [x] Task: Document Zone Types (Residential, Commercial, Industrial) and their basic functions 62d68e1
 - [x] Task: Document Growth Logic (Requirements for placement vs. development) 62d68e1
