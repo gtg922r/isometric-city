@@ -27,12 +27,12 @@
     - [ ] Add '?' help icon to `TopBar.tsx`
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Keyboard Shortcut Help Panel' (Protocol in workflow.md) [cd1e589]
 
-## Phase 3: Polish & Mobile Optimization
+## Phase 3: Polish & Mobile Optimization [checkpoint: da5ba79]
 
 - [x] Task: Improve cursor/ghost visual feedback for active tools [6dd8b58]
     - [ ] Write tests for ghost tile rendering logic
     - [ ] Enhance `CanvasIsometricGrid.tsx` or `drawing.ts` to provide clearer mode-specific feedback
-- [ ] Task: Mobile Shortcut/Help accessibility
+- [x] Task: Mobile Shortcut/Help accessibility [6dd8b58]
     - [ ] Ensure the Help panel is easily accessible via the Mobile toolbar
     - [ ] Audit touch targets for help buttons on mobile
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Polish & Mobile Optimization' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Polish & Mobile Optimization' (Protocol in workflow.md) [da5ba79]
