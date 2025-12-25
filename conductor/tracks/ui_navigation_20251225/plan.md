@@ -17,7 +17,7 @@
 
 ## Phase 2: Keyboard Shortcut Help Panel
 
-- [ ] Task: Design and implement `ShortcutsHelpPanel` component
+- [x] Task: Design and implement `ShortcutsHelpPanel` component [6b5e8b3]
     - [ ] Write tests for `ShortcutsHelpPanel` rendering and visibility toggling
     - [ ] Create `ShortcutsHelpPanel.tsx` using `radix-ui` dialog or sheet
     - [ ] List shortcuts from `src/components/game/constants.ts` or a new config file
