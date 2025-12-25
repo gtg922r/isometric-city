@@ -6,6 +6,10 @@
     - [ ] Write tests for `ShortcutTooltip` to ensure it renders shortcut labels correctly
     - [ ] Implement `ShortcutTooltip` in `src/components/ui/tooltip.tsx` or as a wrapper
     - [ ] Update `Sidebar.tsx` and `TopBar.tsx` buttons to include shortcut information
+- [x] Task: Implement dynamic Mode Indicator in TopBar [7f11cae]
+    - [ ] Write tests for `ModeIndicator` to ensure it reflects `GameContext` mode state
+    - [ ] Implement `ModeIndicator` component
+    - [ ] Integrate `ModeIndicator` into `src/components/game/TopBar.tsx`
 - [ ] Task: Refine 'Escape' key behavior for mode resetting
     - [ ] Write tests in `GameContext` or `useKeyboard` hook for Escape key logic
     - [ ] Implement robust Escape key handling to reset building/tool modes
