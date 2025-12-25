@@ -3,8 +3,8 @@
 ## Phase 1: Setup & Building Catalog
 
 - [x] Task: Create `PLAYER_GUIDE.md` with initial directory structure and Overview [Red: Verify file missing] 49eceb6
-- [ ] Task: Document Service Buildings (Police, Fire, Hospital, School) extracting data from `src/game/constants.ts`
-- [ ] Task: Document Infrastructure mechanics (Roads, Power, Water connectivity rules)
+- [x] Task: Document Service Buildings (Police, Fire, Hospital, School) extracting data from `src/game/constants.ts` 920f1ae
+- [x] Task: Document Infrastructure mechanics (Roads, Power, Water connectivity rules) 920f1ae
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Building Catalog' (Protocol in workflow.md)
 
 ## Phase 2: Zoning & Growth Mechanics
