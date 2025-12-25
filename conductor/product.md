@@ -18,10 +18,11 @@ IsoCity is an open-source isometric city-building simulation designed to be acce
 
 ## High-Level Roadmap
 
-### Phase 1: UX & Navigation (Immediate)
-- **Shortcut Discoverability:** Implement visual cues or a dedicated menu for keyboard shortcuts.
-- **Mode Indication:** Improve visual feedback for the current interaction mode (Build, Demolish, Inspect, etc.).
-- **Navigation Flow:** Refine the interface to ensure smooth transitions between tools and panels.
+### Phase 1: UX & Navigation (Completed)
+- **Shortcut Discoverability:** Implemented contextual tooltips and a centralized Keyboard Shortcuts Help Panel.
+- **Comprehensive Shortcuts:** Added shortcuts for all top-level tools and implemented **Category Cycling** (e.g., 'S' cycles through Services).
+- **Mode Indication:** Added a persistent Mode Indicator in the TopBar and dynamic cursor highlights (Green/Red) for placement feedback.
+- **Navigation Flow:** Refined 'Escape' key behavior and focus management.
 
 ### Phase 2: Cloud Integration
 - **Authentication:** Integrate Firebase Authentication for user accounts.
