@@ -25,8 +25,9 @@ export function SelectIcon({ size = 18, className }: IconProps) {
 export function BulldozeIcon({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-      <path {...baseStroke} d="M4 4l16 16M20 4L4 20" />
-      <path {...baseStroke} d="M7 17h10" />
+      <path {...baseStroke} d="M21.56 4.56a1.5 1.5 0 0 1 0 2.122l-.47.47a3 3 0 0 1-4.212-.03 3 3 0 0 1 0-4.243l.44-.44a1.5 1.5 0 0 1 2.121 0z" />
+      <path {...baseStroke} d="M3 22a1 1 0 0 1-1-1v-3.586a1 1 0 0 1 .293-.707l3.355-3.355a1.205 1.205 0 0 1 1.704 0l3.296 3.296a1.205 1.205 0 0 1 0 1.704l-3.355 3.355a1 1 0 0 1-.707.293z" />
+      <path {...baseStroke} d="m9 15 7.879-7.878" />
     </svg>
   );
 }
@@ -66,12 +67,10 @@ export function CloseIcon({ size = 18, className }: IconProps) {
 export function RoadIcon({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-      {/* Road surface */}
-      <rect {...baseStroke} x="6" y="4" width="12" height="16" rx="1" />
-      {/* Center lane divider */}
-      <path {...baseStroke} d="M12 6v12" strokeDasharray="2 2" />
-      {/* Side edges */}
-      <path {...baseStroke} d="M6 8h12M6 16h12" />
+      <path {...baseStroke} d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle {...baseStroke} cx="7" cy="17" r="2" />
+      <path {...baseStroke} d="M9 17h6" />
+      <circle {...baseStroke} cx="17" cy="17" r="2" />
     </svg>
   );
 }
@@ -346,16 +345,13 @@ export function CheckIcon({ size = 18, className }: IconProps) {
 export function SubwayIcon({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-      {/* Train car body */}
-      <rect {...baseStroke} x="4" y="8" width="16" height="10" rx="3" />
-      {/* Windows */}
-      <rect {...baseStroke} x="6" y="10" width="4" height="4" rx="1" />
-      <rect {...baseStroke} x="14" y="10" width="4" height="4" rx="1" />
-      {/* Wheels */}
-      <circle {...baseStroke} cx="8" cy="19" r="1.5" />
-      <circle {...baseStroke} cx="16" cy="19" r="1.5" />
-      {/* Pantograph/top */}
-      <path {...baseStroke} d="M10 8V5M14 8V5M10 5h4" />
+      <path {...baseStroke} d="M2 22V12a10 10 0 1 1 20 0v10" />
+      <path {...baseStroke} d="M15 6.8v1.4a3 2.8 0 1 1-6 0V6.8" />
+      <path {...baseStroke} d="M10 15h.01" />
+      <path {...baseStroke} d="M14 15h.01" />
+      <path {...baseStroke} d="M10 19a4 4 0 0 1-4-4v-3a6 6 0 1 1 12 0v3a4 4 0 0 1-4 4Z" />
+      <path {...baseStroke} d="m9 19-2 3" />
+      <path {...baseStroke} d="m15 19 2 3" />
     </svg>
   );
 }
@@ -363,14 +359,13 @@ export function SubwayIcon({ size = 18, className }: IconProps) {
 export function RailIcon({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
-      {/* Two parallel rails */}
-      <path {...baseStroke} d="M6 4v16" />
-      <path {...baseStroke} d="M18 4v16" />
-      {/* Cross ties */}
-      <path {...baseStroke} d="M4 6h16" />
-      <path {...baseStroke} d="M4 10h16" />
-      <path {...baseStroke} d="M4 14h16" />
-      <path {...baseStroke} d="M4 18h16" />
+      <path {...baseStroke} d="M2 17 17 2" />
+      <path {...baseStroke} d="m2 14 8 8" />
+      <path {...baseStroke} d="m5 11 8 8" />
+      <path {...baseStroke} d="m8 8 8 8" />
+      <path {...baseStroke} d="m11 5 8 8" />
+      <path {...baseStroke} d="m14 2 8 8" />
+      <path {...baseStroke} d="M7 22 22 7" />
     </svg>
   );
 }
@@ -441,6 +436,65 @@ export function TargetIcon({ size = 18, className }: IconProps) {
       <circle {...baseStroke} cx="12" cy="12" r="10" />
       <circle {...baseStroke} cx="12" cy="12" r="6" />
       <circle {...baseStroke} cx="12" cy="12" r="2" />
+    </svg>
+  );
+}
+
+export function ZoningIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <path {...baseStroke} d="M4 4h16v16H4z" />
+      <path {...baseStroke} d="M4 12h16M12 4v16" />
+    </svg>
+  );
+}
+
+export function ChevronLeftIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <path {...baseStroke} d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
+export function ChevronRightIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <path {...baseStroke} d="M9 18l6-6-6-6" />
+    </svg>
+  );
+}
+
+export function ShipIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <path {...baseStroke} d="M2 21h20" />
+      <path {...baseStroke} d="M19.38 20A11.6 11.6 0 0021 14l-9-4-9 4a11.6 11.6 0 001.62 6h15.76z" />
+      <path {...baseStroke} d="M11 10V7l4-2-1-1" />
+      <path {...baseStroke} d="M15 10V8" />
+    </svg>
+  );
+}
+
+export function CommunityIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <path {...baseStroke} d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle {...baseStroke} cx="9" cy="7" r="4" />
+      <path {...baseStroke} d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path {...baseStroke} d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+export function SportsIcon({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" className={className}>
+      <circle {...baseStroke} cx="12" cy="12" r="10" />
+      <path {...baseStroke} d="M6.7 6.7l10.6 10.6" />
+      <path {...baseStroke} d="M6.7 17.3L17.3 6.7" />
+      <path {...baseStroke} d="M12 2v20" />
+      <path {...baseStroke} d="M2 12h20" />
     </svg>
   );
 }

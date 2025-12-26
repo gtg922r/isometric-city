@@ -127,7 +127,7 @@ export interface CanvasIsometricGridProps {
 
 // Canvas-based Isometric Grid - HIGH PERFORMANCE
 export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile, isMobile = false, navigationTarget, onNavigationComplete, onViewportChange, onBargeDelivery }: CanvasIsometricGridProps) {
-  const { state, placeAtTile, connectToCity, checkAndDiscoverCities, currentSpritePack, visualHour } = useGame();
+  const { state, placeAtTile, connectToCity, checkAndDiscoverCities, currentSpritePack, visualHour, isSidebarCollapsed } = useGame();
   const { grid, gridSize, selectedTool, speed, adjacentCities, waterBodies, gameVersion } = state;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hoverCanvasRef = useRef<HTMLCanvasElement>(null); // PERF: Separate canvas for hover/selection highlights
@@ -884,8 +884,21 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
     };
     updateSize();
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
+    
+    // Also update on sidebar collapse (which changes container size)
+    // We add multiple updates during the transition for smoother resizing
+    const timers = [
+      setTimeout(updateSize, 50),
+      setTimeout(updateSize, 150),
+      setTimeout(updateSize, 300),
+      setTimeout(updateSize, 500)
+    ];
+    
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      timers.forEach(t => clearTimeout(t));
+    };
+  }, [isSidebarCollapsed]);
   
   // Main render function - PERF: Uses requestAnimationFrame throttling to batch multiple state updates
   useEffect(() => {

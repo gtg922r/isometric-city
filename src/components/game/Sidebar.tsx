@@ -8,6 +8,22 @@ import {
   ChartIcon,
   AdvisorIcon,
   SettingsIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  SelectIcon,
+  BulldozeIcon,
+  RoadIcon,
+  RailIcon,
+  SubwayIcon,
+  SafetyIcon,
+  TreeIcon,
+  SportsIcon,
+  AmusementParkIcon,
+  ShipIcon,
+  CommunityIcon,
+  PowerIcon,
+  CityHallIcon,
+  ZoningIcon,
 } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -21,8 +37,39 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ShortcutTooltip } from '@/components/ui/ShortcutTooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { KEYBOARD_SHORTCUTS } from './shortcuts';
 import { TOOL_CATEGORIES } from './categories';
+
+function getCategoryIcon(iconKey: string | undefined, size = 18) {
+  switch (iconKey) {
+    case 'safety': return <SafetyIcon size={size} />;
+    case 'tree': return <TreeIcon size={size} />;
+    case 'sports': return <SportsIcon size={size} />;
+    case 'recreation': return <AmusementParkIcon size={size} />;
+    case 'ship': return <ShipIcon size={size} />;
+    case 'community': return <CommunityIcon size={size} />;
+    case 'utilities': return <PowerIcon size={size} />;
+    case 'special': return <CityHallIcon size={size} />;
+    case 'zoning': return <ZoningIcon size={size} />;
+    default: return null;
+  }
+}
+
+function getToolIcon(tool: Tool, size = 18) {
+  switch (tool) {
+    case 'select': return <SelectIcon size={size} />;
+    case 'bulldoze': return <BulldozeIcon size={size} />;
+    case 'road': return <RoadIcon size={size} />;
+    case 'rail': return <RailIcon size={size} />;
+    case 'subway': return <SubwayIcon size={size} />;
+    case 'zone_residential': return <div className="w-4 h-4 rounded-sm bg-green-500/20 border border-green-500" />;
+    case 'zone_commercial': return <div className="w-4 h-4 rounded-sm bg-blue-500/20 border border-blue-500" />;
+    case 'zone_industrial': return <div className="w-4 h-4 rounded-sm bg-yellow-500/20 border border-yellow-500" />;
+    case 'zone_dezone': return <div className="w-4 h-4 rounded-sm bg-slate-500/20 border border-slate-500" />;
+    default: return null;
+  }
+}
 
 function getToolShortcut(tool: Tool | string): string | undefined {
   if (tool === 'bulldoze') return KEYBOARD_SHORTCUTS.BULLDOZE.label;
@@ -54,6 +101,8 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   onSelectTool,
   forceOpenUpward = false,
   shortcut,
+  isCollapsed = false,
+  iconKey,
 }: {
   label: string;
   tools: Tool[];
@@ -62,6 +111,8 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   onSelectTool: (tool: Tool) => void;
   forceOpenUpward?: boolean;
   shortcut?: string;
+  isCollapsed?: boolean;
+  iconKey?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0, buttonHeight: 0, openUpward: false });
@@ -71,7 +122,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
   
   const hasSelectedTool = tools.includes(selectedTool);
-  const SUBMENU_GAP = 12; // Gap between sidebar and submenu
+  const SUBMENU_GAP = isCollapsed ? 8 : 12; // Gap between sidebar and submenu
   const SUBMENU_MAX_HEIGHT = 220; // Approximate max height of submenu
   
   const clearCloseTimeout = useCallback(() => {
@@ -100,7 +151,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
       });
     }
     setIsOpen(true);
-  }, [clearCloseTimeout, forceOpenUpward]);
+  }, [clearCloseTimeout, forceOpenUpward, SUBMENU_GAP]);
   
   // Triangle rule: Check if cursor is moving toward the submenu
   const isMovingTowardSubmenu = useCallback((e: React.MouseEvent) => {
@@ -157,6 +208,37 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
       }
     };
   }, []);
+
+  const categoryIcon = getCategoryIcon(iconKey);
+  
+  const buttonContent = (
+    <Button
+      ref={buttonRef}
+      variant={hasSelectedTool ? 'default' : 'ghost'}
+      className={`w-full justify-between gap-2 px-3 py-2.5 h-auto text-sm group transition-all duration-200 ${
+        hasSelectedTool ? 'bg-primary text-primary-foreground' : ''
+      } ${isOpen ? 'bg-muted/80' : ''} ${isCollapsed ? 'px-0 justify-center' : ''}`}
+    >
+      <div className="flex items-center gap-2 overflow-hidden">
+        {categoryIcon && (
+          <div className={`shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}>
+            {categoryIcon}
+          </div>
+        )}
+        {!isCollapsed && <span className="font-medium truncate">{label}</span>}
+      </div>
+      {!isCollapsed && (
+        <svg 
+          className={`w-4 h-4 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      )}
+    </Button>
+  );
   
   return (
     <div 
@@ -166,30 +248,26 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
       onMouseLeave={handleMouseLeave}
     >
       {/* Category Header Button */}
-      <Button
-        ref={buttonRef}
-        variant={hasSelectedTool ? 'default' : 'ghost'}
-        className={`w-full justify-between gap-2 px-3 py-2.5 h-auto text-sm group transition-all duration-200 ${
-          hasSelectedTool ? 'bg-primary text-primary-foreground' : ''
-        } ${isOpen ? 'bg-muted/80' : ''}`}
-      >
-        <span className="font-medium">{label}</span>
-        <svg 
-          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </Button>
+      {isCollapsed ? (
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            {buttonContent}
+          </TooltipTrigger>
+          <TooltipContent side="right" className="flex items-center gap-2">
+            <span>{label}</span>
+            {shortcut && <span className="text-[10px] font-mono opacity-70">({shortcut.toUpperCase()})</span>}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        buttonContent
+      )}
       
       {/* Invisible bridge/safe-zone between button and submenu for triangle rule */}
       {isOpen && (
         <div
           className="fixed"
           style={{
-            top: `${menuPosition.top}px`,
+            top: `${menuPosition.top - (menuPosition.openUpward ? 200 : 0)}px`,
             left: `${menuPosition.left - SUBMENU_GAP}px`,
             width: `${SUBMENU_GAP + 8}px`, // Overlap slightly with submenu
             height: `${Math.max(menuPosition.buttonHeight, 200)}px`, // Tall enough to cover path
@@ -300,7 +378,7 @@ function ExitDialog({
 
 // Memoized Sidebar Component
 export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => void }) {
-  const { state, setTool, setActivePanel, saveCity } = useGame();
+  const { state, setTool, setActivePanel, saveCity, isSidebarCollapsed, setIsSidebarCollapsed } = useGame();
   const { selectedTool, stats, activePanel } = state;
   const [showExitDialog, setShowExitDialog] = useState(false);
   
@@ -325,36 +403,53 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
   const zoningSubmenu = useMemo(() => ({
     key: 'zoning',
     label: 'Zoning',
-    tools: ['zone_dezone', 'zone_water', 'zone_land'] as Tool[]
+    tools: ['zone_dezone', 'zone_water', 'zone_land'] as Tool[],
+    icon: 'zoning'
   }), []);
   
   // Submenu categories (hover to expand) - includes all new assets from main
   const submenuCategories = useMemo(() => TOOL_CATEGORIES, []);
   
   return (
-    <div className="w-56 bg-sidebar border-r border-sidebar-border flex flex-col h-full relative z-40">
-      <div className="px-4 py-4 border-b border-sidebar-border">
+    <div 
+      className={`bg-sidebar border-r border-sidebar-border flex flex-col h-full relative z-40 transition-all duration-300 ease-in-out ${
+        isSidebarCollapsed ? 'w-14' : 'w-56'
+      }`}
+    >
+      <div className={`px-4 py-4 border-b border-sidebar-border ${isSidebarCollapsed ? 'px-2' : 'px-4'}`}>
         <div className="flex items-center justify-between">
-          <span className="text-sidebar-foreground font-bold tracking-tight">ISOCITY</span>
-          <div className="flex items-center gap-1">
-            <ShortcutTooltip content="Search" shortcut={KEYBOARD_SHORTCUTS.SEARCH.label}>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={openCommandMenu}
-                className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
-              >
-                <svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
+          {!isSidebarCollapsed && (
+            <span className="text-sidebar-foreground font-bold tracking-tight">ISOCITY</span>
+          )}
+          <div className={`flex items-center gap-1 ${isSidebarCollapsed ? 'flex-col w-full' : ''}`}>
+            {!isSidebarCollapsed && (
+              <ShortcutTooltip content="Search" shortcut={KEYBOARD_SHORTCUTS.SEARCH.label}>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={openCommandMenu}
+                  className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </Button>
-            </ShortcutTooltip>
-            {onExit && (
+                  <svg 
+                    className="w-4 h-4" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </Button>
+              </ShortcutTooltip>
+            )}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="h-7 w-7 text-muted-foreground hover:text-sidebar-foreground"
+            >
+              {isSidebarCollapsed ? <ChevronRightIcon size={16} /> : <ChevronLeftIcon size={16} />}
+            </Button>
+            {onExit && !isSidebarCollapsed && (
               <ShortcutTooltip content="Exit to Main Menu">
                 <Button
                   variant="ghost"
@@ -381,34 +476,64 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
         {/* Direct categories (TOOLS, ZONES) */}
         {Object.entries(directCategories).map(([category, tools]) => (
           <div key={category} className="mb-1">
-            <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
-              {category}
-            </div>
-            <div className="px-2 flex flex-col gap-0.5">
+            {!isSidebarCollapsed && (
+              <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
+                {category}
+              </div>
+            )}
+            <div className={`flex flex-col gap-0.5 ${isSidebarCollapsed ? 'px-1' : 'px-2'}`}>
               {tools.map(tool => {
                 const info = TOOL_INFO[tool];
                 if (!info) return null;
                 const isSelected = selectedTool === tool;
                 const canAfford = stats.money >= info.cost;
                 const shortcut = getToolShortcut(tool);
+                const toolIcon = getToolIcon(tool);
                 
                 const tooltipContent = `${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`;
                 
+                const toolButton = (
+                  <Button
+                    onClick={() => setTool(tool)}
+                    disabled={!canAfford && info.cost > 0}
+                    variant={isSelected ? 'default' : 'ghost'}
+                    className={`w-full h-auto text-sm transition-all duration-200 ${
+                      isSelected ? 'bg-primary text-primary-foreground' : ''
+                    } ${isSidebarCollapsed ? 'px-0 py-2.5 justify-center' : 'justify-start gap-3 px-3 py-2'}`}
+                  >
+                    {toolIcon && <div className="shrink-0">{toolIcon}</div>}
+                    {!isSidebarCollapsed && (
+                      <>
+                        <span className="flex-1 text-left truncate">{info.name}</span>
+                        {info.cost > 0 && (
+                          <span className="text-xs opacity-60">${info.cost}</span>
+                        )}
+                      </>
+                    )}
+                  </Button>
+                );
+
+                if (isSidebarCollapsed) {
+                  return (
+                    <Tooltip key={tool} delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        {toolButton}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="flex flex-col gap-0.5 max-w-xs">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="font-bold">{info.name}</span>
+                          {shortcut && <span className="text-[10px] font-mono opacity-70">({shortcut})</span>}
+                        </div>
+                        <p className="text-xs text-muted-foreground">{info.description}</p>
+                        {info.cost > 0 && <p className="text-xs font-medium text-primary">Cost: ${info.cost.toLocaleString()}</p>}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
                 return (
                   <ShortcutTooltip key={tool} content={tooltipContent} shortcut={shortcut}>
-                    <Button
-                      onClick={() => setTool(tool)}
-                      disabled={!canAfford && info.cost > 0}
-                      variant={isSelected ? 'default' : 'ghost'}
-                      className={`w-full justify-start gap-3 px-3 py-2 h-auto text-sm ${
-                        isSelected ? 'bg-primary text-primary-foreground' : ''
-                      }`}
-                    >
-                      <span className="flex-1 text-left truncate">{info.name}</span>
-                      {info.cost > 0 && (
-                        <span className="text-xs opacity-60">${info.cost}</span>
-                      )}
-                    </Button>
+                    {toolButton}
                   </ShortcutTooltip>
                 );
               })}
@@ -421,6 +546,8 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                   selectedTool={selectedTool}
                   money={stats.money}
                   onSelectTool={setTool}
+                  isCollapsed={isSidebarCollapsed}
+                  iconKey={zoningSubmenu.icon}
                 />
               )}
             </div>
@@ -428,16 +555,18 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
         ))}
         
         {/* Separator */}
-        <div className="mx-4 my-2 h-px bg-sidebar-border/50" />
+        <div className={`my-2 h-px bg-sidebar-border/50 ${isSidebarCollapsed ? 'mx-2' : 'mx-4'}`} />
         
         {/* Buildings header */}
-        <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
-          BUILDINGS
-        </div>
+        {!isSidebarCollapsed && (
+          <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
+            BUILDINGS
+          </div>
+        )}
         
         {/* Submenu categories */}
-        <div className="px-2 flex flex-col gap-0.5">
-          {submenuCategories.map(({ key, label, tools, forceOpenUpward, shortcut }) => (
+        <div className={`flex flex-col gap-0.5 ${isSidebarCollapsed ? 'px-1' : 'px-2'}`}>
+          {submenuCategories.map(({ key, label, tools, forceOpenUpward, shortcut, icon }) => (
             <HoverSubmenu
               key={key}
               label={label}
@@ -447,20 +576,22 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               onSelectTool={setTool}
               forceOpenUpward={forceOpenUpward}
               shortcut={shortcut}
+              isCollapsed={isSidebarCollapsed}
+              iconKey={icon}
             />
           ))}
         </div>
       </ScrollArea>
       
-      <div className="border-t border-sidebar-border p-2">
-        <div className="grid grid-cols-4 gap-1">
+      <div className={`border-t border-sidebar-border p-2 ${isSidebarCollapsed ? 'px-1' : 'p-2'}`}>
+        <div className={`grid gap-1 ${isSidebarCollapsed ? 'grid-cols-1' : 'grid-cols-4'}`}>
           {[
             { panel: 'budget' as const, icon: <BudgetIcon size={16} />, label: 'Budget' },
             { panel: 'statistics' as const, icon: <ChartIcon size={16} />, label: 'Statistics' },
             { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, label: 'Advisors' },
             { panel: 'settings' as const, icon: <SettingsIcon size={16} />, label: 'Settings' },
-          ].map(({ panel, icon, label }) => (
-            <ShortcutTooltip key={panel} content={label}>
+          ].map(({ panel, icon, label }) => {
+            const panelButton = (
               <Button
                 onClick={() => setActivePanel(activePanel === panel ? 'none' : panel)}
                 variant={activePanel === panel ? 'default' : 'ghost'}
@@ -469,8 +600,19 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
               >
                 {icon}
               </Button>
-            </ShortcutTooltip>
-          ))}
+            );
+
+            return (
+              <Tooltip key={panel} delayDuration={0}>
+                <TooltipTrigger asChild>
+                  {panelButton}
+                </TooltipTrigger>
+                <TooltipContent side={isSidebarCollapsed ? "right" : "top"}>
+                  {label}
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
         </div>
       </div>
       

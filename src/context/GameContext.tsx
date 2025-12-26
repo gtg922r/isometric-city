@@ -37,6 +37,7 @@ const SAVED_CITIES_INDEX_KEY = 'isocity-saved-cities-index'; // Index of all sav
 const SAVED_CITY_PREFIX = 'isocity-city-'; // Prefix for individual saved city states
 const SPRITE_PACK_STORAGE_KEY = 'isocity-sprite-pack';
 const DAY_NIGHT_MODE_STORAGE_KEY = 'isocity-day-night-mode';
+const SIDEBAR_COLLAPSED_STORAGE_KEY = 'isocity-sidebar-collapsed';
 
 export type DayNightMode = 'auto' | 'day' | 'night';
 
@@ -87,6 +88,9 @@ type GameContextValue = {
   loadSavedCity: (cityId: string) => boolean;
   deleteSavedCity: (cityId: string) => void;
   renameSavedCity: (cityId: string, newName: string) => void;
+  // Sidebar state
+  isSidebarCollapsed: boolean;
+  setIsSidebarCollapsed: (collapsed: boolean) => void;
 };
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -354,6 +358,27 @@ function saveDayNightMode(mode: DayNightMode): void {
   }
 }
 
+// Load sidebar collapsed state from localStorage
+function loadSidebarCollapsed(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === 'true';
+  } catch (e) {
+    console.error('Failed to load sidebar collapsed preference:', e);
+  }
+  return false;
+}
+
+// Save sidebar collapsed state to localStorage
+function saveSidebarCollapsed(collapsed: boolean): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
+  } catch (e) {
+    console.error('Failed to save sidebar collapsed preference:', e);
+  }
+}
+
 // Save current city for later restoration (when viewing shared cities)
 function saveCityForRestore(state: GameState): void {
   if (typeof window === 'undefined') return;
@@ -520,6 +545,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Day/night mode state
   const [dayNightMode, setDayNightModeState] = useState<DayNightMode>('auto');
   
+  // Sidebar collapsed state
+  const [isSidebarCollapsed, setIsSidebarCollapsedState] = useState<boolean>(false);
+  
   // Saved cities state for multi-city save system
   const [savedCities, setSavedCities] = useState<SavedCityMeta[]>([]);
   
@@ -534,6 +562,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     // Load day/night mode preference
     const savedDayNightMode = loadDayNightMode();
     setDayNightModeState(savedDayNightMode);
+    
+    // Load sidebar collapsed preference
+    const savedSidebarCollapsed = loadSidebarCollapsed();
+    setIsSidebarCollapsedState(savedSidebarCollapsed);
     
     // Load saved cities index
     const cities = loadSavedCitiesIndex();
@@ -892,6 +924,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const setDayNightMode = useCallback((mode: DayNightMode) => {
     setDayNightModeState(mode);
     saveDayNightMode(mode);
+  }, []);
+
+  const setIsSidebarCollapsed = useCallback((collapsed: boolean) => {
+    setIsSidebarCollapsedState(collapsed);
+    saveSidebarCollapsed(collapsed);
   }, []);
 
   // Compute the visual hour based on the day/night mode override
@@ -1254,6 +1291,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     loadSavedCity,
     deleteSavedCity,
     renameSavedCity,
+    // Sidebar state
+    isSidebarCollapsed,
+    setIsSidebarCollapsed,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
