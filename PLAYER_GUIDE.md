@@ -136,14 +136,22 @@ Maintaining services and infrastructure costs money every month:
 -   **Funding Levels:** You can adjust funding for each department in the Budget panel. Lowering funding reduces service effectiveness (and coverage radius) but saves money.
 
 ### Demand Calculation
-Demand is the "engine" of growth, driven by a cycle of People <-> Jobs.
+Demand is measured on a scale of **-100 to +100**.
 
-**Base Calculations:**
-*   **Residential Demand:** Increases when there are excess **Jobs**. `(Jobs - Pop) / 18`
-*   **Commercial/Industrial Demand:** Increases when there is excess **Population**. `(Pop - Jobs) / 2`
-*   **Subway Bonus:** An extensive subway network directly boosts **Commercial Demand** (up to +20).
+**The Cycle of Growth:**
+*   **Residential Demand:** `(Jobs - Pop*0.7) / 18`
+    *   *Context:* **+1 Demand Point** requires roughly **18 new jobs**.
+*   **Commercial Demand:** `(Pop*0.3 - Jobs*0.3) / 4`
+    *   *Context:* **+1 Demand Point** requires roughly **13 new residents**.
+*   **Industrial Demand:** `(Pop*0.35 - Jobs*0.3) / 2`
+    *   *Context:* **+1 Demand Point** requires roughly **6 new residents**.
+
+**Bonuses:**
+*   **Special Buildings:** Provide "artificial" demand points.
+    *   *Example:* City Hall gives **+8 Res Demand**. This is equivalent to adding **144 Jobs** to your city.
+    *   *Note:* Bonuses apply only after the building's construction is **100% complete**.
+*   **Subways:** Boost Commercial Demand by up to **+20** (equivalent to ~260 residents).
 
 **Modifiers:**
-*   **Taxation:** Taxes above 9% reduce demand. At 20% tax, demand is crushed (-22).
-*   **Special Buildings:** Provide flat bonuses (e.g., Airport +15 Com/Ind).
+*   **Taxation:** Taxes above 9% reduce demand. At 20% tax, demand is crushed (-22 points).
 
