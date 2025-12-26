@@ -21,7 +21,7 @@ Integrate the upgrade logic into the core simulation loops using the new utility
 - [x] Task: Implement simulation changes to pass the new tests.
 - [x] Task: Conductor - User Manual Verification 'Simulation Integration' (Protocol in workflow.md)
 
-## Phase 3: UI - Selection Modal & Upgrade Logic
+## Phase 3: UI - Selection Modal & Upgrade Logic [checkpoint: bbb381e]
 Implement the user interface for upgrading buildings and the logic for processing the upgrade.
 
 - [x] Task: Create `UpgradeSection` component in `src/components/game/BuildingUpgradeUI.tsx`. [7eb6acc]
@@ -29,7 +29,7 @@ Implement the user interface for upgrading buildings and the logic for processin
 - [x] Task: Implement the `upgradeBuilding` action in `GameContext` (or relevant state manager) to handle the transaction and state update. [7eb6acc]
 - [x] Task: Add stat comparison display (Current vs. Next) in the upgrade UI. [7eb6acc]
 - [x] Task: Write tests for the upgrade action, ensuring funds are deducted and the `isUpgraded` flag is set correctly. [7eb6acc]
-- [ ] Task: Conductor - User Manual Verification 'UI & Upgrade Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'UI & Upgrade Logic' (Protocol in workflow.md) [bbb381e]
 
 ## Phase 4: Visuals & Feedback
 Connect the upgraded state to the rendering engine and provide visual feedback to the player.
