@@ -45,18 +45,18 @@ Parks provide happiness and reduce pollution, improving the city's Environment s
 | **Basketball Court** | $250 | 1x1 | -3 |
 | **Playground** | $200 | 1x1 | -5 |
 | **Swimming Pool** | $450 | 1x1 | -5 |
-| **Stadium** | $5,000 | 3x3 | - |
 
 ### Special Buildings
 These unique structures provide massive city-wide bonuses and demand boosts.
 
-| Building | Cost | Size | Jobs | Impact |
+| Building | Cost | Size | Jobs | Impact (Demand) |
 | :--- | :--- | :--- | :--- | :--- |
-| **City Hall** | $6,000 | 2x2 | 60 | **Global Demand Boost** (Res+8, Com+10, Ind+5). |
-| **Museum** | $4,000 | 3x3 | 40 | **Commercial Boost** (+15). |
-| **Airport** | $10,000 | 4x4 | 200 | **Major Commercial/Industrial Boost** (+15/+10). High Pollution (+20). |
-| **Space Program** | $15,000 | 3x3 | 150 | **High-Tech Industry Boost** (+20). |
-| **Amusement Park** | $12,000 | 4x4 | 100 | **Commercial Demand Boost** (+18). |
+| **City Hall** | $6,000 | 2x2 | 60 | Res +8, Com +10, Ind +5. |
+| **Museum** | $4,000 | 3x3 | 40 | Com +8 (Max +15), Res +5 (Max +10). |
+| **Stadium** | $5,000 | 3x3 | 50 | Com +5 (Max +15). |
+| **Airport** | $10,000 | 4x4 | 200 | Com +15, Ind +10. High Pollution. |
+| **Space Program** | $15,000 | 3x3 | 150 | Ind +20, Res +10. |
+| **Amusement Park** | $12,000 | 4x4 | 100 | Com +18. |
 
 ---
 
@@ -71,13 +71,15 @@ In IsoCity, **Density** is represented by a building's **Level** (1-5).
 Buildings automatically "level up" when specific criteria are met, replacing their sprite with a larger, denser structure.
 
 **Growth Formula:**
-Your building's target level is calculated from:
-1.  **Base Land Value:** All land supports at least **Level 2** development.
-2.  **Service Coverage:** Full coverage (Police, Fire, Health, Education) provides **+3.5 Levels**.
-3.  **Time:** Buildings gain **+1 Level** for every ~60 ticks (approx. 2 game months) they survive.
-4.  **Demand:** High demand provides a small boost (**+0.7 Levels**).
+The simulation calculates a decimal target level, which is then rounded down.
+`Target Level = Floor(Base + Services + Age + Demand)`
 
-*Tip: To reach Level 5 (Skyscrapers), you need excellent Service Coverage and a stable, long-lasting building.*
+*   **Base (Land Value):** All buildable land provides a base of **2.0** levels.
+*   **Services:** Average coverage % of Police, Fire, Health, and Education. Max **+3.5** levels.
+*   **Age:** **+0.016** per tick. (Approx. +1 level every 2 game months).
+*   **Demand:** **+0.01** per demand point above 30. (Max **+0.7** levels).
+
+*Example: A new building (Age 0) with 50% services (1.75) and base land (2.0) = Level 3.75 -> Level 3.*
 
 ### Zone Types
 | Zone | Primary Purpose | Key Requirements |
