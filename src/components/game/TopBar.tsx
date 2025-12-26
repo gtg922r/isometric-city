@@ -218,17 +218,6 @@ export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: 
         </div>
         
         <ModeIndicator />
-
-        <ShortcutTooltip content="Keyboard Shortcuts" shortcut={KEYBOARD_SHORTCUTS.HELP.label}>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={onShowHelp}
-            className="h-7 w-7 text-muted-foreground hover:text-foreground"
-          >
-            <InfoIcon size={14} />
-          </Button>
-        </ShortcutTooltip>
       </div>
       
       <div className="flex items-center gap-8">
@@ -268,6 +257,19 @@ export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: 
           />
           <span className="text-foreground text-xs font-mono tabular-nums w-8">{taxRate}%</span>
         </div>
+        
+        <Separator orientation="vertical" className="h-8" />
+        
+        <ShortcutTooltip content="Keyboard Shortcuts" shortcut={KEYBOARD_SHORTCUTS.HELP.label}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={onShowHelp}
+            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+          >
+            <InfoIcon size={14} />
+          </Button>
+        </ShortcutTooltip>
       </div>
     </div>
   );
