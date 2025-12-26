@@ -23,6 +23,12 @@ import {
 } from '@/types/game';
 import { generateCityName, generateWaterName } from './names';
 import { isMobile } from 'react-device-detect';
+import { 
+  getBuildingRange, 
+  getBuildingMaintenance, 
+  getBuildingPollution, 
+  getBuildingEffectMagnitude 
+} from './upgradeUtils';
 
 // Default grid size for new games
 export const DEFAULT_GRID_SIZE = isMobile ? 50 : 70;
@@ -1199,38 +1205,42 @@ function calculateServiceCoverage(grid: Tile[][], size: number): ServiceCoverage
   const services = createServiceCoverage(size);
   
   // First pass: collect all service building positions (much faster than checking every tile)
-  const serviceBuildings: Array<{ x: number; y: number; type: BuildingType }> = [];
+  const serviceBuildings: Array<{ x: number; y: number; building: Building }> = [];
   
   for (let y = 0; y < size; y++) {
     for (let x = 0; x < size; x++) {
       const tile = grid[y][x];
-      const buildingType = tile.building.type;
+      const building = tile.building;
+      const buildingType = building.type;
       
       // Quick check if this is a service building
       if (!SERVICE_BUILDING_TYPES.has(buildingType)) continue;
       
       // Skip buildings under construction
-      if (tile.building.constructionProgress !== undefined && tile.building.constructionProgress < 100) {
+      if (building.constructionProgress !== undefined && building.constructionProgress < 100) {
         continue;
       }
       
       // Skip abandoned buildings
-      if (tile.building.abandoned) {
+      if (building.abandoned) {
         continue;
       }
       
-      serviceBuildings.push({ x, y, type: buildingType });
+      serviceBuildings.push({ x, y, building });
     }
   }
   
   // Second pass: apply coverage for each service building
-  for (const building of serviceBuildings) {
-    const { x, y, type } = building;
+  for (const item of serviceBuildings) {
+    const { x, y, building } = item;
+    const type = building.type;
     const config = SERVICE_CONFIG[type as keyof typeof SERVICE_CONFIG];
     if (!config) continue;
     
-    const range = config.range;
-    const rangeSquared = config.rangeSquared;
+    const baseRange = (config as any).range;
+    const range = getBuildingRange(building, baseRange);
+    const rangeSquared = range * range;
+    const effectMagnitude = getBuildingEffectMagnitude(building);
     
     // Calculate bounds to avoid checking tiles outside the grid
     const minY = Math.max(0, y - range);
@@ -1274,7 +1284,7 @@ function calculateServiceCoverage(grid: Tile[][], size: number): ServiceCoverage
           if (distSquared <= rangeSquared) {
             // Only compute sqrt when we need the actual distance for coverage falloff
             const distance = Math.sqrt(distSquared);
-            const coverage = Math.max(0, (1 - distance / range) * 100);
+            const coverage = Math.max(0, (1 - distance / range) * 100) * effectMagnitude;
             currentCoverage[ny][nx] = Math.min(100, currentCoverage[ny][nx] + coverage);
           }
         }
@@ -1872,50 +1882,51 @@ function calculateAverageCoverage(coverage: number[][]): number {
 function updateBudgetCosts(grid: Tile[][], budget: Budget): Budget {
   const newBudget = { ...budget };
   
-  let policeCount = 0;
-  let fireCount = 0;
-  let hospitalCount = 0;
-  let schoolCount = 0;
-  let universityCount = 0;
-  let parkCount = 0;
-  let powerCount = 0;
-  let waterCount = 0;
-  let roadCount = 0;
-  let subwayTileCount = 0;
-  let subwayStationCount = 0;
+  let policeCost = 0;
+  let fireCost = 0;
+  let hospitalCost = 0;
+  let schoolCost = 0;
+  let universityCost = 0;
+  let parkCost = 0;
+  let powerCost = 0;
+  let waterCost = 0;
+  let roadCost = 0;
+  let subwayTileCost = 0;
+  let subwayStationCost = 0;
 
   // PERF: Single pass through grid instead of two separate loops
   for (const row of grid) {
     for (const tile of row) {
+      const building = tile.building;
       // Count subway tiles
-      if (tile.hasSubway) subwayTileCount++;
+      if (tile.hasSubway) subwayTileCost += 3;
       
       // Count building types using switch for jump table optimization
-      switch (tile.building.type) {
-        case 'police_station': policeCount++; break;
-        case 'fire_station': fireCount++; break;
-        case 'hospital': hospitalCount++; break;
-        case 'school': schoolCount++; break;
-        case 'university': universityCount++; break;
-        case 'park': parkCount++; break;
-        case 'park_large': parkCount++; break;
-        case 'tennis': parkCount++; break;
-        case 'power_plant': powerCount++; break;
-        case 'water_tower': waterCount++; break;
-        case 'road': roadCount++; break;
-        case 'subway_station': subwayStationCount++; break;
+      switch (building.type) {
+        case 'police_station': policeCost += getBuildingMaintenance(building, 50); break;
+        case 'fire_station': fireCost += getBuildingMaintenance(building, 50); break;
+        case 'hospital': hospitalCost += getBuildingMaintenance(building, 100); break;
+        case 'school': schoolCost += getBuildingMaintenance(building, 30); break;
+        case 'university': universityCost += getBuildingMaintenance(building, 100); break;
+        case 'park': parkCost += getBuildingMaintenance(building, 10); break;
+        case 'park_large': parkCost += getBuildingMaintenance(building, 10); break;
+        case 'tennis': parkCost += getBuildingMaintenance(building, 10); break;
+        case 'power_plant': powerCost += getBuildingMaintenance(building, 150); break;
+        case 'water_tower': waterCost += getBuildingMaintenance(building, 75); break;
+        case 'road': roadCost += 2; break;
+        case 'subway_station': subwayStationCost += 25; break;
       }
     }
   }
 
-  newBudget.police.cost = policeCount * 50;
-  newBudget.fire.cost = fireCount * 50;
-  newBudget.health.cost = hospitalCount * 100;
-  newBudget.education.cost = schoolCount * 30 + universityCount * 100;
-  newBudget.transportation.cost = roadCount * 2 + subwayTileCount * 3 + subwayStationCount * 25;
-  newBudget.parks.cost = parkCount * 10;
-  newBudget.power.cost = powerCount * 150;
-  newBudget.water.cost = waterCount * 75;
+  newBudget.police.cost = policeCost;
+  newBudget.fire.cost = fireCost;
+  newBudget.health.cost = hospitalCost;
+  newBudget.education.cost = schoolCost + universityCost;
+  newBudget.transportation.cost = roadCost + subwayTileCost + subwayStationCost;
+  newBudget.parks.cost = parkCost;
+  newBudget.power.cost = powerCost;
+  newBudget.water.cost = waterCost;
 
   return newBudget;
 }
@@ -2208,7 +2219,9 @@ export function simulateTick(state: GameState): GameState {
 
       // Update pollution from buildings
       const buildingStats = BUILDING_STATS[tile.building.type];
-      tile.pollution = Math.max(0, tile.pollution * 0.95 + (buildingStats?.pollution || 0));
+      const basePollution = buildingStats?.pollution || 0;
+      const actualPollution = getBuildingPollution(tile.building, basePollution);
+      tile.pollution = Math.max(0, tile.pollution * 0.95 + actualPollution);
 
       // Fire simulation
       if (state.disastersEnabled && tile.building.onFire) {
