@@ -812,6 +812,27 @@ function generateUUID(): string {
 export function createInitialGameState(size: number = DEFAULT_GRID_SIZE, cityName: string = 'New City'): GameState {
   const { grid, waterBodies } = generateTerrain(size);
   const adjacentCities = generateAdjacentCities();
+  
+  // Create a default city covering the entire map
+  const defaultCity: import('@/types/game').City = {
+    id: generateUUID(),
+    name: cityName,
+    bounds: {
+      minX: 0,
+      minY: 0,
+      maxX: size - 1,
+      maxY: size - 1,
+    },
+    economy: {
+      population: 0,
+      jobs: 0,
+      income: 0,
+      expenses: 0,
+      happiness: 50,
+      lastCalculated: 0,
+    },
+    color: '#3b82f6',
+  };
 
   return {
     id: generateUUID(),
@@ -838,6 +859,7 @@ export function createInitialGameState(size: number = DEFAULT_GRID_SIZE, cityNam
     adjacentCities,
     waterBodies,
     gameVersion: 0,
+    cities: [defaultCity],
   };
 }
 
@@ -2517,6 +2539,59 @@ export function removeSubway(state: GameState, x: number, y: number): GameState 
 
   const newGrid = state.grid.map(row => row.map(t => ({ ...t, building: { ...t.building } })));
   newGrid[y][x].hasSubway = false;
+
+  return { ...state, grid: newGrid };
+}
+
+// Terraform a tile into water
+export function placeWaterTerraform(state: GameState, x: number, y: number): GameState {
+  const tile = state.grid[y]?.[x];
+  if (!tile) return state;
+  
+  // Already water
+  if (tile.building.type === 'water') return state;
+
+  const newGrid = state.grid.map(row => row.map(t => ({ ...t, building: { ...t.building } })));
+  
+  // Check if this tile is part of a multi-tile building
+  const origin = findBuildingOrigin(newGrid, x, y, state.gridSize);
+  
+  if (origin) {
+    // Clear the entire multi-tile building first, then place water on this tile
+    const size = getBuildingSize(origin.buildingType);
+    for (let dy = 0; dy < size.height; dy++) {
+      for (let dx = 0; dx < size.width; dx++) {
+        const clearX = origin.originX + dx;
+        const clearY = origin.originY + dy;
+        if (clearX < state.gridSize && clearY < state.gridSize) {
+          newGrid[clearY][clearX].building = createBuilding('grass');
+          newGrid[clearY][clearX].zone = 'none';
+        }
+      }
+    }
+  }
+  
+  // Now place water on the target tile
+  newGrid[y][x].building = createBuilding('water');
+  newGrid[y][x].zone = 'none';
+  newGrid[y][x].hasSubway = false; // Remove any subway under water
+
+  return { ...state, grid: newGrid };
+}
+
+// Terraform a tile into land (grass)
+export function placeLandTerraform(state: GameState, x: number, y: number): GameState {
+  const tile = state.grid[y]?.[x];
+  if (!tile) return state;
+  
+  // Only works on water tiles
+  if (tile.building.type !== 'water') return state;
+
+  const newGrid = state.grid.map(row => row.map(t => ({ ...t, building: { ...t.building } })));
+  
+  // Convert water to grass
+  newGrid[y][x].building = createBuilding('grass');
+  newGrid[y][x].zone = 'none';
 
   return { ...state, grid: newGrid };
 }

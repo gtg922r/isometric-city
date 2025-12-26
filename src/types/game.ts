@@ -88,6 +88,8 @@ export type Tool =
   | 'zone_commercial'
   | 'zone_industrial'
   | 'zone_dezone'
+  | 'zone_water'
+  | 'zone_land'
   | 'police_station'
   | 'fire_station'
   | 'hospital'
@@ -153,6 +155,8 @@ export const TOOL_INFO: Record<Tool, ToolInfo> = {
   zone_commercial: { name: 'Commercial', cost: 50, description: 'Zone for shops and offices' },
   zone_industrial: { name: 'Industrial', cost: 50, description: 'Zone for factories' },
   zone_dezone: { name: 'De-zone', cost: 0, description: 'Remove zoning' },
+  zone_water: { name: 'Water Terraform', cost: 50000, description: 'Terraform land into water' },
+  zone_land: { name: 'Land Terraform', cost: 50000, description: 'Terraform water into land' },
   police_station: { name: 'Police', cost: 500, description: 'Increase safety', size: 1 },
   fire_station: { name: 'Fire Station', cost: 500, description: 'Fight fires', size: 1 },
   hospital: { name: 'Hospital', cost: 1000, description: 'Improve health (2x2)', size: 2 },
@@ -214,6 +218,35 @@ export interface Building {
   constructionProgress: number; // 0-100, building is under construction until 100
   abandoned: boolean; // Building is abandoned due to low demand, produces nothing
   flipped?: boolean; // Horizontally mirror the sprite (used for waterfront buildings to face water)
+  cityId?: string; // ID of the city this building belongs to (for multi-city support)
+}
+
+// City definition for multi-city maps
+export interface City {
+  id: string;
+  name: string;
+  // Bounds of the city (inclusive tile coordinates)
+  bounds: {
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+  };
+  // Economy stats (cached for performance)
+  economy: CityEconomy;
+  // City color for border rendering
+  color: string;
+}
+
+// Cached economy data for a city
+export interface CityEconomy {
+  population: number;
+  jobs: number;
+  income: number;
+  expenses: number;
+  happiness: number;
+  // Timestamp of last calculation for cache invalidation
+  lastCalculated: number;
 }
 
 export interface Tile {
@@ -338,6 +371,7 @@ export interface GameState {
   adjacentCities: AdjacentCity[];
   waterBodies: WaterBody[];
   gameVersion: number; // Increments when a new game starts - used to clear transient state like vehicles
+  cities: City[]; // Cities in the map (for multi-city support)
 }
 
 // Saved city metadata for the multi-save system

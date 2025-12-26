@@ -318,7 +318,14 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
   // Direct tool categories (shown inline)
   const directCategories = useMemo(() => ({
     'TOOLS': ['select', 'bulldoze', 'road', 'rail', 'subway'] as Tool[],
-    'ZONES': ['zone_residential', 'zone_commercial', 'zone_industrial', 'zone_dezone'] as Tool[],
+    'ZONES': ['zone_residential', 'zone_commercial', 'zone_industrial'] as Tool[],
+  }), []);
+  
+  // Zoning submenu (shown under ZONES section, before BUILDINGS)
+  const zoningSubmenu = useMemo(() => ({
+    key: 'zoning',
+    label: 'Zoning',
+    tools: ['zone_dezone', 'zone_water', 'zone_land'] as Tool[]
   }), []);
   
   // Submenu categories (hover to expand) - includes all new assets from main
@@ -405,6 +412,17 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                   </ShortcutTooltip>
                 );
               })}
+              {/* Zoning submenu - appears after ZONES category */}
+              {category === 'ZONES' && (
+                <HoverSubmenu
+                  key={zoningSubmenu.key}
+                  label={zoningSubmenu.label}
+                  tools={zoningSubmenu.tools}
+                  selectedTool={selectedTool}
+                  money={stats.money}
+                  onSelectTool={setTool}
+                />
+              )}
             </div>
           </div>
         ))}

@@ -40,8 +40,8 @@ export const PEDESTRIAN_SPAWN_INTERVAL = 0.03;      // Seconds between spawn bat
 export const PEDESTRIAN_UPDATE_SKIP_DISTANCE = 30;  // Skip detailed updates for pedestrians this far from view
 
 // Zoom limits for camera
-export const ZOOM_MIN = 0.2;                      // Minimum zoom level (most zoomed out)
-export const ZOOM_MAX = 7;                        // Maximum zoom level (most zoomed in)
+export const ZOOM_MIN = 0.15;                     // Minimum zoom level (most zoomed out - for large maps/multiple cities)
+export const ZOOM_MAX = 5;                        // Maximum zoom level (most zoomed in)
 
 // Zoom thresholds for rendering detail elements
 // Lower values = more zoomed out, higher values = more zoomed in required
@@ -49,6 +49,13 @@ export const CAR_MIN_ZOOM = 0.4;                  // Desktop car threshold (cars
 export const CAR_MIN_ZOOM_MOBILE = 0.45;          // Mobile car threshold (slightly higher for perf)
 export const PEDESTRIAN_MIN_ZOOM = 0.5;           // Desktop pedestrian threshold
 export const PEDESTRIAN_MIN_ZOOM_MOBILE = 0.55;   // Mobile pedestrian threshold (slightly higher for perf)
+
+// Vehicle rendering thresholds - hide at very zoomed out levels for performance
+export const VEHICLE_FAR_ZOOM_THRESHOLD = 0.25;   // Below this zoom: hide ALL vehicles/pedestrians on desktop too
+export const TRAIN_MIN_ZOOM_FAR = 0.20;           // Trains visible slightly further out than cars
+export const BOAT_MIN_ZOOM_FAR = 0.20;            // Boats visible at moderate zoom
+export const HELICOPTER_MIN_ZOOM_FAR = 0.20;      // Helicopters visible at moderate zoom
+export const AIRPLANE_MIN_ZOOM_FAR = 0;           // Airplanes always visible at all zoom levels
 export const TRAFFIC_LIGHT_MIN_ZOOM = 0.45;       // Traffic lights at intersections
 export const DIRECTION_ARROWS_MIN_ZOOM = 0.65;    // Directional arrows on merged roads
 export const MEDIAN_PLANTS_MIN_ZOOM = 0.55;       // Plants/shrubs on road medians
@@ -124,17 +131,21 @@ export const SEAPLANE_MIN_POPULATION = 3000; // Minimum population for seaplanes
 export const SEAPLANE_MIN_BAY_SIZE = 12; // Minimum water tiles for a bay to support seaplanes
 export const SEAPLANE_COLORS = ['#ffffff', '#1e40af', '#dc2626', '#f97316', '#059669']; // Seaplane liveries
 export const MAX_SEAPLANES = 25; // Maximum seaplanes in the city
-export const SEAPLANE_SPAWN_INTERVAL_MIN = 3; // Minimum seconds between spawns
-export const SEAPLANE_SPAWN_INTERVAL_MAX = 8; // Maximum seconds between spawns
-export const SEAPLANE_TAXI_TIME_MIN = 3; // Minimum seconds taxiing on water before takeoff
-export const SEAPLANE_TAXI_TIME_MAX = 8; // Maximum seconds taxiing
-export const SEAPLANE_FLIGHT_TIME_MIN = 20; // Minimum flight time in seconds
-export const SEAPLANE_FLIGHT_TIME_MAX = 40; // Maximum flight time
-export const SEAPLANE_WATER_SPEED = 20; // Speed when taxiing on water (px/sec)
+export const SEAPLANE_SPAWN_INTERVAL_MIN = 4; // Minimum seconds between spawns
+export const SEAPLANE_SPAWN_INTERVAL_MAX = 10; // Maximum seconds between spawns
+export const SEAPLANE_TAXI_TIME_MIN = 4; // Minimum seconds taxiing on water before takeoff
+export const SEAPLANE_TAXI_TIME_MAX = 10; // Maximum seconds taxiing
+export const SEAPLANE_DOCK_TIME_MIN = 8; // Minimum seconds docked at marina/pier
+export const SEAPLANE_DOCK_TIME_MAX = 20; // Maximum seconds docked
+export const SEAPLANE_FLIGHT_TIME_MIN = 25; // Minimum flight time in seconds
+export const SEAPLANE_FLIGHT_TIME_MAX = 50; // Maximum flight time
+export const SEAPLANE_WATER_SPEED = 18; // Speed when taxiing on water (px/sec)
+export const SEAPLANE_DOCK_APPROACH_SPEED = 12; // Speed when approaching dock
 export const SEAPLANE_TAKEOFF_SPEED = 60; // Speed during takeoff run
 export const SEAPLANE_FLIGHT_SPEED_MIN = 70; // Minimum cruising speed
 export const SEAPLANE_FLIGHT_SPEED_MAX = 100; // Maximum cruising speed
 export const SEAPLANE_MIN_ZOOM = 0.3; // Minimum zoom to show seaplanes
+export const SEAPLANE_MAX_FLIGHTS = 3; // Maximum flights before despawning
 
 // Helicopter system constants
 export const HELICOPTER_MIN_POPULATION = 3000; // Minimum population required for helicopter activity
@@ -251,7 +262,12 @@ export const TRAFFIC_LIGHT_YELLOW_DURATION = 0.8;  // Seconds
 export const TRAFFIC_LIGHT_CYCLE = 7.6;            // Full cycle time
 
 // Train system constants
-export const TRAIN_MIN_ZOOM = 0.35;               // Minimum zoom to show trains
+export const TRAIN_MIN_ZOOM = 0.35;               // Minimum zoom to show trains (normal)
 export const TRAIN_SPAWN_INTERVAL = 3.0;          // Seconds between train spawn attempts
 export const MIN_RAIL_TILES_FOR_TRAINS = 10;      // Minimum rail tiles needed
 export const MAX_TRAINS = 35;                      // Maximum trains in city
+
+// Far zoom thresholds - all mobile/animated entities hidden below these levels
+export const HELICOPTER_MIN_ZOOM = 0.3;           // Minimum zoom to show helicopters
+export const SMOG_MIN_ZOOM = 0.35;                // Minimum zoom to show factory smog
+export const FIREWORK_MIN_ZOOM = 0.3;             // Minimum zoom to show fireworks
