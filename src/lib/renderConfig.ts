@@ -71,6 +71,15 @@ export interface SpritePack {
   // Per-building-type scale adjustments for DENSE variant sprites only
   // Values are multiplied with the normal scale (e.g., 0.95 = 95% of normal size)
   denseScales?: Record<string, number>;
+  // Path to the upgrade sprite sheet (upgrade variants for supported buildings)
+  upgradeSrc?: string;
+  // Upgrade variants: maps building type to available variants in the upgrade sheet
+  // Each variant specifies row and column (0-indexed) in the upgrade sprite sheet
+  upgradeVariants?: Record<string, { row: number; col: number }[]>;
+  // Per-building-type vertical offset adjustments for UPGRADE variant sprites only
+  upgradeVerticalOffsets?: Record<string, number>;
+  // Per-building-type scale adjustments for UPGRADE variant sprites only
+  upgradeScales?: Record<string, number>;
   // Per-building-type vertical offset adjustments for MODERN variant sprites only
   // These override verticalOffsets when rendering modern variants
   modernVerticalOffsets?: Record<string, number>;
@@ -307,6 +316,20 @@ const SPRITE_PACK_SPRITES4: SpritePack = {
   denseScales: {
     // Dense apartment_high scaled down 10% total (5% more from 0.95)
     apartment_high: 0.90,
+  },
+  // Upgrade sprite sheet configuration
+  upgradeSrc: '/assets/sprites_red_water_upgrade_buildings.png',
+  upgradeVariants: {
+    power_plant: [{ row: 2, col: 2 }],
+    water_tower: [{ row: 2, col: 1 }],
+    police_station: [{ row: 1, col: 3 }],
+    fire_station: [{ row: 0, col: 3 }],
+  },
+  upgradeVerticalOffsets: {
+    power_plant: -0.3,
+    water_tower: -0.5,
+    police_station: -0.2,
+    fire_station: -0.3,
   },
   // Modern sprite sheet configuration (same layout as dense: 5 cols, 6 rows)
   modernSrc: '/assets/sprites_red_water_new_modern.png',

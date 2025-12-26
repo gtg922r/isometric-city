@@ -2257,10 +2257,11 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
           const isAbandoned = tile.building.abandoned === true;
 
           // Use appropriate sprite sheet based on building state
-          // Priority: parks construction > construction > abandoned > parks > dense/modern variants > farm variants > normal
+          // Priority: parks construction > construction > abandoned > parks > upgrade > dense/modern variants > farm variants > normal
           let spriteSource = activePack.src;
           let useDenseVariant: { row: number; col: number } | null = null;
           let useModernVariant: { row: number; col: number } | null = null;
+          let useUpgradeVariant: { row: number; col: number } | null = null;
           let useFarmVariant: { row: number; col: number } | null = null;
           let useShopVariant: { row: number; col: number } | null = null;
           let useStationVariant: { row: number; col: number } | null = null;
@@ -2282,6 +2283,13 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
             // Check if this building type is from the parks sprite sheet
             useParksBuilding = activePack.parksBuildings![buildingType];
             spriteSource = activePack.parksSrc;
+          } else if (tile.building.isUpgraded && activePack.upgradeSrc && activePack.upgradeVariants?.[buildingType]) {
+            // Use upgrade sprite sheet for upgraded buildings
+            spriteSource = activePack.upgradeSrc;
+            const variants = activePack.upgradeVariants[buildingType];
+            // Deterministic variant selection based on position
+            const variantIndex = (tile.x + tile.y) % variants.length;
+            useUpgradeVariant = variants[variantIndex];
           } else if (activePack.denseSrc && activePack.denseVariants && activePack.denseVariants[buildingType]) {
             // Check if this building type has dense variants available
             const denseVariants = activePack.denseVariants[buildingType];
@@ -2415,6 +2423,20 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
                 sy: sourceY,
                 sw: tileWidth,
                 sh: sourceH,
+              };
+            } else if (useUpgradeVariant) {
+              // Calculate coordinates directly from upgrade variant row/col
+              // Assuming upgrade sheet has same grid layout as main sheet
+              const tileWidth = Math.floor(sheetWidth / activePack.cols);
+              const tileHeight = Math.floor(sheetHeight / activePack.rows);
+              
+              const { row, col } = useUpgradeVariant;
+              
+              coords = {
+                sx: col * tileWidth,
+                sy: row * tileHeight,
+                sw: tileWidth,
+                sh: tileHeight,
               };
             } else if (useDenseVariant) {
               isDenseVariant = true;
@@ -2724,6 +2746,9 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
               } else if (isParksBuilding && activePack.parksVerticalOffsets && buildingType in activePack.parksVerticalOffsets) {
                 // Parks buildings may need specific positioning
                 extraOffset = activePack.parksVerticalOffsets[buildingType] * h;
+              } else if (useUpgradeVariant && activePack.upgradeVerticalOffsets && buildingType in activePack.upgradeVerticalOffsets) {
+                // Upgrade variants may need different positioning than normal
+                extraOffset = activePack.upgradeVerticalOffsets[buildingType] * h;
               } else if (isDenseVariant && activePack.denseVerticalOffsets && buildingType in activePack.denseVerticalOffsets) {
                 // Dense variants may need different positioning than normal
                 extraOffset = activePack.denseVerticalOffsets[buildingType] * h;
