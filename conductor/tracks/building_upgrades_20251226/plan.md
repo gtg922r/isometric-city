@@ -11,14 +11,15 @@ Establish the data structures and configuration that will drive the upgrade syst
 - [x] Task: Write unit tests to verify that `getBuildingStats` returns correct values for both normal and upgraded buildings.
 - [x] Task: Conductor - User Manual Verification 'Foundation & Configuration' (Protocol in workflow.md)
 
-## Phase 2: Simulation Integration (TDD)
+## Phase 2: Simulation Integration (TDD) [checkpoint: 7eafc4d]
 Integrate the upgrade logic into the core simulation loops using the new utility.
 
+- [x] Task: Update `calculateServiceCoverage` in `src/lib/simulation.ts` to use dynamic ranges from `upgradeUtils`.
 - [x] Task: Update `updateBudgetCosts` in `src/lib/simulation.ts` to account for increased maintenance of upgraded buildings.
 - [x] Task: Update `calculateStats` to apply the `effectMagnitude` and `pollutionFactor` for upgraded buildings.
 - [x] Task: Write failing tests in `src/lib/__tests__/simulation.upgrades.test.ts` that verify coverage and budget changes when buildings are upgraded.
 - [x] Task: Implement simulation changes to pass the new tests.
-- [ ] Task: Conductor - User Manual Verification 'Simulation Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Simulation Integration' (Protocol in workflow.md)
 
 ## Phase 3: UI - Selection Modal & Upgrade Logic
 Implement the user interface for upgrading buildings and the logic for processing the upgrade.
