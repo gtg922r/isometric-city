@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Improve simulation complexity. To start with we need to help users understand the current simulation dynamics. Create a PLAYER_GUIDE that describes all building and zone types, aspects like 'levels', the impacts and effects and requirements of every building type etc.
-*Link: [./conductor/tracks/simulation_guide_20251225/](./conductor/tracks/simulation_guide_20251225/)*
+## [ ] Track: Visualize Simulation Mechanics. Implement visual tools to help players understand simulation depth, including a Target Level Overlay and improved shortcuts (A for Sports, O for Overlay cycling).
+*Link: [./conductor/tracks/simulation_viz_20251226/](./conductor/tracks/simulation_viz_20251226/)*
