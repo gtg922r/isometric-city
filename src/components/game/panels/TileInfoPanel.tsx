@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CloseIcon } from '@/components/ui/Icons';
+import { useGame, toolBuildingMap } from '@/context/GameContext';
+import { getUpgradeForBuilding } from '@/lib/buildingUpgrades';
+import { TOOL_INFO, Tool } from '@/types/game';
 
 interface TileInfoPanelProps {
   tile: Tile;
@@ -29,7 +32,19 @@ export function TileInfoPanel({
   isMobile = false
 }: TileInfoPanelProps) {
   const { x, y } = tile;
+  const { upgradeBuilding, state } = useGame();
   
+  const upgrade = getUpgradeForBuilding(tile.building.type);
+  let upgradeCost = 0;
+  if (upgrade) {
+    const toolEntry = Object.entries(toolBuildingMap).find(([_, type]) => type === tile.building.type);
+    const tool = toolEntry ? (toolEntry[0] as Tool) : null;
+    const baseCost = tool ? TOOL_INFO[tool]?.cost : 0;
+    upgradeCost = baseCost * upgrade.costMultiplier;
+  }
+  
+  const canAfford = state.stats.money >= upgradeCost;
+
   return (
     <Card 
       className={`${isMobile ? 'fixed left-0 right-0 w-full rounded-none border-x-0 border-t border-b z-30' : 'absolute top-4 right-4 w-72'}`} 
@@ -130,6 +145,36 @@ export function TileInfoPanel({
             <span>{Math.round(services.education[y][x])}%</span>
           </div>
         </div>
+
+        {upgrade && !tile.building.isUpgraded && (
+          <>
+            <Separator />
+            <div className="space-y-2">
+              <div className="font-semibold text-sm">Upgrade Available</div>
+              <div className="text-xs text-muted-foreground">{upgrade.name}</div>
+              <div className="text-xs text-muted-foreground">{upgrade.description}</div>
+              <Button 
+                className="w-full" 
+                size="sm" 
+                variant={canAfford ? "default" : "secondary"}
+                disabled={!canAfford}
+                onClick={() => upgradeBuilding(x, y)}
+              >
+                Upgrade (${upgradeCost.toLocaleString()})
+              </Button>
+            </div>
+          </>
+        )}
+
+        {tile.building.isUpgraded && upgrade && (
+          <>
+             <Separator />
+             <div className="flex justify-between items-center text-green-400 text-xs font-semibold">
+                <span>{upgrade.name} Installed</span>
+                <Badge variant="outline" className="text-green-400 border-green-400">Upgraded</Badge>
+             </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

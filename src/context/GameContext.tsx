@@ -11,6 +11,7 @@ import {
   TOOL_INFO,
   ZoneType,
 } from '@/types/game';
+import { getUpgradeForBuilding } from '@/lib/buildingUpgrades';
 import {
   bulldozeTile,
   createInitialGameState,
@@ -58,6 +59,7 @@ type GameContextValue = {
   setActivePanel: (panel: GameState['activePanel']) => void;
   setBudgetFunding: (key: keyof Budget, funding: number) => void;
   placeAtTile: (x: number, y: number) => void;
+  upgradeBuilding: (x: number, y: number) => void;
   finishTrackDrag: (pathTiles: { x: number; y: number }[], trackType: 'road' | 'rail') => void; // Create bridges after road/rail drag
   connectToCity: (cityId: string) => void;
   discoverCity: (cityId: string) => void;
@@ -101,7 +103,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
-const toolBuildingMap: Partial<Record<Tool, BuildingType>> = {
+export const toolBuildingMap: Partial<Record<Tool, BuildingType>> = {
   road: 'road',
   rail: 'rail',
   rail_station: 'rail_station',
@@ -818,6 +820,58 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const upgradeBuilding = useCallback((x: number, y: number) => {
+    setState((prev) => {
+      const tile = prev.grid[y]?.[x];
+      if (!tile) return prev;
+      
+      const buildingType = tile.building.type;
+      const upgrade = getUpgradeForBuilding(buildingType);
+      
+      if (!upgrade) return prev;
+      if (tile.building.isUpgraded) return prev;
+      
+      // Calculate cost
+      const toolEntry = Object.entries(toolBuildingMap).find(([_, type]) => type === buildingType);
+      const tool = toolEntry ? (toolEntry[0] as Tool) : null;
+      const baseCost = tool ? TOOL_INFO[tool]?.cost : 0;
+      
+      const upgradeCost = baseCost * upgrade.costMultiplier;
+      
+      if (prev.stats.money < upgradeCost) return prev;
+      
+      // Create new grid with upgraded building
+      const newGrid = [...prev.grid];
+      newGrid[y] = [...newGrid[y]];
+      newGrid[y][x] = {
+        ...tile,
+        building: {
+          ...tile.building,
+          isUpgraded: true
+        }
+      };
+      
+      return {
+        ...prev,
+        grid: newGrid,
+        stats: {
+          ...prev.stats,
+          money: prev.stats.money - upgradeCost
+        },
+        notifications: [
+          {
+            id: `upgrade-${Date.now()}`,
+            title: 'Building Upgraded!',
+            description: `${upgrade.name} installed for $${upgradeCost}.`,
+            icon: 'check',
+            timestamp: Date.now(),
+          },
+          ...prev.notifications.slice(0, 9),
+        ]
+      };
+    });
+  }, []);
+
   // Called after a road/rail drag operation to create bridges for water crossings
   const finishTrackDrag = useCallback((pathTiles: { x: number; y: number }[], trackType: 'road' | 'rail') => {
     setState((prev) => createBridgesOnPath(prev, pathTiles, trackType));
@@ -1269,6 +1323,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setActivePanel,
     setBudgetFunding,
     placeAtTile,
+    upgradeBuilding,
     finishTrackDrag,
     connectToCity,
     discoverCity,

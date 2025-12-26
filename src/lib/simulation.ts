@@ -22,6 +22,7 @@ import {
   INDUSTRIAL_BUILDINGS,
 } from '@/types/game';
 import { generateCityName, generateWaterName } from './names';
+import { getUpgradeForBuilding } from './buildingUpgrades';
 import { isMobile } from 'react-device-detect';
 
 // Default grid size for new games
@@ -1229,8 +1230,13 @@ function calculateServiceCoverage(grid: Tile[][], size: number): ServiceCoverage
     const config = SERVICE_CONFIG[type as keyof typeof SERVICE_CONFIG];
     if (!config) continue;
     
-    const range = config.range;
-    const rangeSquared = config.rangeSquared;
+    // Check for upgrades
+    const tile = grid[y][x];
+    const upgrade = tile.building.isUpgraded ? getUpgradeForBuilding(tile.building.type) : undefined;
+    const rangeMultiplier = upgrade ? upgrade.rangeMultiplier : 1;
+    
+    const range = config.range * rangeMultiplier;
+    const rangeSquared = range * range;
     
     // Calculate bounds to avoid checking tiles outside the grid
     const minY = Math.max(0, y - range);
@@ -1890,18 +1896,21 @@ function updateBudgetCosts(grid: Tile[][], budget: Budget): Budget {
       // Count subway tiles
       if (tile.hasSubway) subwayTileCount++;
       
+      const upgrade = tile.building.isUpgraded ? getUpgradeForBuilding(tile.building.type) : undefined;
+      const multiplier = upgrade ? upgrade.maintenanceMultiplier : 1;
+
       // Count building types using switch for jump table optimization
       switch (tile.building.type) {
-        case 'police_station': policeCount++; break;
-        case 'fire_station': fireCount++; break;
-        case 'hospital': hospitalCount++; break;
-        case 'school': schoolCount++; break;
-        case 'university': universityCount++; break;
-        case 'park': parkCount++; break;
-        case 'park_large': parkCount++; break;
-        case 'tennis': parkCount++; break;
-        case 'power_plant': powerCount++; break;
-        case 'water_tower': waterCount++; break;
+        case 'police_station': policeCount += multiplier; break;
+        case 'fire_station': fireCount += multiplier; break;
+        case 'hospital': hospitalCount += multiplier; break;
+        case 'school': schoolCount += multiplier; break;
+        case 'university': universityCount += multiplier; break;
+        case 'park': parkCount += multiplier; break;
+        case 'park_large': parkCount += multiplier; break;
+        case 'tennis': parkCount += multiplier; break;
+        case 'power_plant': powerCount += multiplier; break;
+        case 'water_tower': waterCount += multiplier; break;
         case 'road': roadCount++; break;
         case 'subway_station': subwayStationCount++; break;
       }
@@ -2208,7 +2217,14 @@ export function simulateTick(state: GameState): GameState {
 
       // Update pollution from buildings
       const buildingStats = BUILDING_STATS[tile.building.type];
-      tile.pollution = Math.max(0, tile.pollution * 0.95 + (buildingStats?.pollution || 0));
+      let pollution = buildingStats?.pollution || 0;
+      if (tile.building.isUpgraded) {
+        const upgrade = getUpgradeForBuilding(tile.building.type);
+        if (upgrade) {
+            pollution *= upgrade.pollutionMultiplier;
+        }
+      }
+      tile.pollution = Math.max(0, tile.pollution * 0.95 + pollution);
 
       // Fire simulation
       if (state.disastersEnabled && tile.building.onFire) {
