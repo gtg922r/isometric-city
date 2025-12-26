@@ -1065,6 +1065,43 @@ function hasRoadAccess(
 }
 
 // Evolve buildings based on conditions, reserving footprints as density increases
+// Calculate the target level for a building/tile based on simulation rules
+// Exported for use in overlays/UI
+export function calculateTargetLevel(
+  tile: Tile,
+  localCoverage: { police: number; fire: number; health: number; education: number },
+  demand?: { residential: number; commercial: number; industrial: number }
+): number {
+  const building = tile.building;
+  const zone = tile.zone;
+  const landValue = tile.landValue;
+  
+  const serviceCoverage = (
+    localCoverage.police +
+    localCoverage.fire +
+    localCoverage.health +
+    localCoverage.education
+  ) / 4;
+
+  // Get zone demand to factor into level calculation
+  const zoneDemandForLevel = demand ? (
+    zone === 'residential' ? demand.residential :
+    zone === 'commercial' ? demand.commercial :
+    zone === 'industrial' ? demand.industrial : 0
+  ) : 0;
+  
+  // High demand increases target level, encouraging densification
+  // At demand 60, adds ~0.5 level; at demand 100, adds ~1 level
+  const demandLevelBoost = Math.max(0, (zoneDemandForLevel - 30) / 70) * 0.7;
+
+  // Use building age if exists, otherwise assume 0 (e.g. for potential calculation)
+  const age = building.age || 0;
+
+  return Math.min(5, Math.max(1, Math.floor(
+    (landValue / 24) + (serviceCoverage / 28) + (age / 60) + demandLevelBoost
+  )));
+}
+
 function evolveBuilding(grid: Tile[][], x: number, y: number, services: ServiceCoverage, demand?: { residential: number; commercial: number; industrial: number }): Building {
   const tile = grid[y][x];
   const building = tile.building;
@@ -1196,28 +1233,13 @@ function evolveBuilding(grid: Tile[][], x: number, y: number, services: ServiceC
     zone === 'commercial' ? COMMERCIAL_BUILDINGS :
     zone === 'industrial' ? INDUSTRIAL_BUILDINGS : [];
 
-  // Calculate level based on land value, services, and demand
-  const serviceCoverage = (
-    services.police[y][x] +
-    services.fire[y][x] +
-    services.health[y][x] +
-    services.education[y][x]
-  ) / 4;
-
-  // Get zone demand to factor into level calculation
-  const zoneDemandForLevel = demand ? (
-    zone === 'residential' ? demand.residential :
-    zone === 'commercial' ? demand.commercial :
-    zone === 'industrial' ? demand.industrial : 0
-  ) : 0;
-  
-  // High demand increases target level, encouraging densification
-  // At demand 60, adds ~0.5 level; at demand 100, adds ~1 level
-  const demandLevelBoost = Math.max(0, (zoneDemandForLevel - 30) / 70) * 0.7;
-
-  const targetLevel = Math.min(5, Math.max(1, Math.floor(
-    (landValue / 24) + (serviceCoverage / 28) + (building.age / 60) + demandLevelBoost
-  )));
+  const localCoverage = {
+    police: services.police[y][x],
+    fire: services.fire[y][x],
+    health: services.health[y][x],
+    education: services.education[y][x]
+  };
+  const targetLevel = calculateTargetLevel(tile, localCoverage, demand);
 
   const targetIndex = Math.min(buildingList.length - 1, targetLevel - 1);
   const targetType = buildingList[targetIndex];

@@ -2903,7 +2903,7 @@ export function CanvasIsometricGrid({ overlayMode, selectedTile, setSelectedTile
             education: state.services.education[tile.y][tile.x],
           };
           
-          const fillStyle = getOverlayFillStyle(overlayMode, tile, coverage);
+          const fillStyle = getOverlayFillStyle(overlayMode, tile, coverage, state.stats.demand);
           // Only draw if there's actually a color to show
           if (fillStyle !== 'rgba(0, 0, 0, 0)') {
             buildingsCtx.fillStyle = fillStyle;

@@ -5,6 +5,7 @@
 
 import { Tile } from '@/types/game';
 import { OverlayMode } from './types';
+import { calculateTargetLevel } from '@/lib/simulation';
 
 // ============================================================================
 // Types
@@ -160,7 +161,8 @@ const NO_OVERLAY = 'rgba(0, 0, 0, 0)';
 export function getOverlayFillStyle(
   mode: OverlayMode,
   tile: Tile,
-  coverage: ServiceCoverage
+  coverage: ServiceCoverage,
+  demand?: { residential: number; commercial: number; industrial: number }
 ): string {
   // Only show warning on tiles that have buildings needing coverage
   const needsCoverage = tileNeedsCoverage(tile);
@@ -215,8 +217,10 @@ export function getOverlayFillStyle(
       return `rgba(0, ${Math.floor(255 * lvIntensity)}, ${Math.floor(100 + 155 * (1 - lvIntensity))}, 0.4)`;
 
     case 'target_level':
-      // Placeholder for Phase 2
-      return NO_OVERLAY;
+      const potentialLevel = calculateTargetLevel(tile, coverage, demand);
+      if (potentialLevel <= 2) return 'rgba(239, 68, 68, 0.4)'; // Red (Low)
+      if (potentialLevel <= 4) return 'rgba(250, 204, 21, 0.4)'; // Yellow (Medium)
+      return 'rgba(74, 222, 128, 0.5)'; // Green (High)
 
     case 'none':
     default:

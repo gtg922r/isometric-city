@@ -9,9 +9,9 @@
 
 ## Phase 2: Target Level Overlay Implementation
 
-- [ ] Task: Create `TargetLevel` calculation helper (extracting logic from `simulation.ts` if needed to be shared).
-- [ ] Task: Implement `TargetLevelOverlay` renderer in `src/components/game/overlays.ts`.
-- [ ] Task: Integrate new overlay into the `Game.tsx` rendering loop and the 'O' cycle.
+- [x] Task: Create `TargetLevel` calculation helper (extracting logic from `simulation.ts` if needed to be shared).
+- [x] Task: Implement `TargetLevelOverlay` renderer in `src/components/game/overlays.ts`.
+- [x] Task: Integrate new overlay into the `Game.tsx` rendering loop and the 'O' cycle.
 - [ ] Task: Conductor - Phase 2 Verification
 
 ## Phase 3: Final Verification
