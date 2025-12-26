@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { ShortcutTooltip } from '@/components/ui/ShortcutTooltip';
 import { KEYBOARD_SHORTCUTS } from './shortcuts';
 import { ModeIndicator } from './ModeIndicator';
+import { AccountMenu } from './AccountMenu';
 import {
   PlayIcon,
   PauseIcon,
@@ -259,7 +260,9 @@ export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: 
         </div>
         
         <Separator orientation="vertical" className="h-8" />
-        
+        <AccountMenu />
+
+        <Separator orientation="vertical" className="h-8" />        
         <ShortcutTooltip content="Keyboard Shortcuts" shortcut={KEYBOARD_SHORTCUTS.HELP.label}>
           <Button
             variant="ghost"
@@ -270,6 +273,8 @@ export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: 
             <InfoIcon size={14} />
           </Button>
         </ShortcutTooltip>
+
+
       </div>
     </div>
   );

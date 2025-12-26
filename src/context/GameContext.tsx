@@ -30,6 +30,15 @@ import {
   setActiveSpritePack,
   SpritePack,
 } from '@/lib/renderConfig';
+import {
+  saveCloudCity,
+  loadCloudCities,
+  loadCloudCity,
+  deleteCloudCity,
+  renameCloudCity,
+  CloudCityMeta,
+} from '@/lib/cloudStorage';
+import { useAuthSafe } from '@/context/AuthContext';
 
 const STORAGE_KEY = 'isocity-game-state';
 const SAVED_CITY_STORAGE_KEY = 'isocity-saved-city'; // For restoring after viewing shared city
@@ -37,7 +46,6 @@ const SAVED_CITIES_INDEX_KEY = 'isocity-saved-cities-index'; // Index of all sav
 const SAVED_CITY_PREFIX = 'isocity-city-'; // Prefix for individual saved city states
 const SPRITE_PACK_STORAGE_KEY = 'isocity-sprite-pack';
 const DAY_NIGHT_MODE_STORAGE_KEY = 'isocity-day-night-mode';
-const SIDEBAR_COLLAPSED_STORAGE_KEY = 'isocity-sidebar-collapsed';
 
 export type DayNightMode = 'auto' | 'day' | 'night';
 
@@ -47,6 +55,12 @@ export type SavedCityInfo = {
   population: number;
   money: number;
   savedAt: number;
+} | null;
+
+// Sync conflict data for when user signs in with both local and cloud cities
+export type SyncConflictData = {
+  localCities: SavedCityMeta[];
+  cloudCities: CloudCityMeta[];
 } | null;
 
 type GameContextValue = {
@@ -88,9 +102,15 @@ type GameContextValue = {
   loadSavedCity: (cityId: string) => boolean;
   deleteSavedCity: (cityId: string) => void;
   renameSavedCity: (cityId: string, newName: string) => void;
-  // Sidebar state
-  isSidebarCollapsed: boolean;
-  setIsSidebarCollapsed: (collapsed: boolean) => void;
+  // Cloud sync
+  cloudCities: CloudCityMeta[];
+  isSyncing: boolean;
+  syncConflict: SyncConflictData;
+  resolveSyncConflict: (resolution: 'local' | 'cloud' | 'merge') => Promise<void>;
+  refreshCloudCities: () => Promise<void>;
+  loadCloudSavedCity: (cityId: string) => Promise<boolean>;
+  deleteCloudSavedCity: (cityId: string) => Promise<void>;
+  renameCloudSavedCity: (cityId: string, newName: string) => Promise<void>;
 };
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -358,27 +378,6 @@ function saveDayNightMode(mode: DayNightMode): void {
   }
 }
 
-// Load sidebar collapsed state from localStorage
-function loadSidebarCollapsed(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === 'true';
-  } catch (e) {
-    console.error('Failed to load sidebar collapsed preference:', e);
-  }
-  return false;
-}
-
-// Save sidebar collapsed state to localStorage
-function saveSidebarCollapsed(collapsed: boolean): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(collapsed));
-  } catch (e) {
-    console.error('Failed to save sidebar collapsed preference:', e);
-  }
-}
-
 // Save current city for later restoration (when viewing shared cities)
 function saveCityForRestore(state: GameState): void {
   if (typeof window === 'undefined') return;
@@ -530,6 +529,10 @@ function deleteCityState(cityId: string): void {
 }
 
 export function GameProvider({ children }: { children: React.ReactNode }) {
+  // Get auth context - may be null if AuthProvider isn't mounted yet
+  const authContext = useAuthSafe();
+  const user = authContext?.user ?? null;
+  
   // Start with a default state, we'll load from localStorage after mount
   const [state, setState] = useState<GameState>(() => createInitialGameState(DEFAULT_GRID_SIZE, 'IsoCity'));
   
@@ -545,11 +548,16 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   // Day/night mode state
   const [dayNightMode, setDayNightModeState] = useState<DayNightMode>('auto');
   
-  // Sidebar collapsed state
-  const [isSidebarCollapsed, setIsSidebarCollapsedState] = useState<boolean>(false);
-  
   // Saved cities state for multi-city save system
   const [savedCities, setSavedCities] = useState<SavedCityMeta[]>([]);
+  
+  // Cloud sync state
+  const [cloudCities, setCloudCities] = useState<CloudCityMeta[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncConflict, setSyncConflict] = useState<SyncConflictData>(null);
+  const lastCloudSyncRef = useRef<number>(0);
+  const previousUserRef = useRef<string | null>(null);
+  const hasCheckedSyncConflictRef = useRef(false);
   
   // Load game state and sprite pack from localStorage on mount (client-side only)
   useEffect(() => {
@@ -562,10 +570,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     // Load day/night mode preference
     const savedDayNightMode = loadDayNightMode();
     setDayNightModeState(savedDayNightMode);
-    
-    // Load sidebar collapsed preference
-    const savedSidebarCollapsed = loadSidebarCollapsed();
-    setIsSidebarCollapsedState(savedSidebarCollapsed);
     
     // Load saved cities index
     const cities = loadSavedCitiesIndex();
@@ -658,6 +662,88 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       }
     };
   }, []);
+
+  // Cloud sync: Detect user sign-in and check for conflicts (runs ONCE per sign-in)
+  useEffect(() => {
+    const currentUserId = user?.uid ?? null;
+    const prevUserId = previousUserRef.current;
+    
+    // User just signed in (was null, now has uid) - only check once
+    if (currentUserId && !prevUserId && !hasCheckedSyncConflictRef.current) {
+      hasCheckedSyncConflictRef.current = true;
+      
+      // Check for sync conflicts
+      const checkConflicts = async () => {
+        try {
+          const cloud = await loadCloudCities(currentUserId);
+          setCloudCities(cloud);
+          
+          // Get current local cities (read fresh from storage to avoid stale state)
+          const localCities = loadSavedCitiesIndex();
+          
+          // If user has both local and cloud cities, show conflict dialog
+          if (localCities.length > 0 && cloud.length > 0) {
+            setSyncConflict({
+              localCities: localCities,
+              cloudCities: cloud,
+            });
+          } else if (localCities.length > 0 && cloud.length === 0) {
+            // Only local cities exist - sync them to cloud silently
+            for (const city of localCities) {
+              const cityState = loadCityState(city.id);
+              if (cityState) {
+                await saveCloudCity(currentUserId, cityState);
+              }
+            }
+            // Refresh cloud cities
+            const updated = await loadCloudCities(currentUserId);
+            setCloudCities(updated);
+          }
+          // If only cloud cities exist, just load them (already done above)
+        } catch (e) {
+          console.error('Failed to check cloud sync conflicts:', e);
+        }
+      };
+      
+      checkConflicts();
+    }
+    
+    // User signed out - reset the check flag
+    if (!currentUserId && prevUserId) {
+      hasCheckedSyncConflictRef.current = false;
+    }
+    
+    previousUserRef.current = currentUserId;
+  }, [user]);
+
+  // Cloud sync: Periodically sync current game to cloud
+  useEffect(() => {
+    if (!user || !hasLoadedRef.current) return;
+    
+    const cloudSyncInterval = setInterval(async () => {
+      // Don't sync too frequently
+      const timeSinceLastSync = Date.now() - lastCloudSyncRef.current;
+      if (timeSinceLastSync < 10000) return; // 10 second minimum between cloud syncs
+      
+      // Don't sync if there's no state
+      if (!stateToSaveRef.current) return;
+      
+      // Don't sync if there's a conflict pending
+      if (syncConflict) return;
+      
+      try {
+        setIsSyncing(true);
+        await saveCloudCity(user.uid, stateToSaveRef.current);
+        lastCloudSyncRef.current = Date.now();
+      } catch (e) {
+        console.error('Failed to sync to cloud:', e);
+      } finally {
+        setIsSyncing(false);
+      }
+    }, 15000); // Check every 15 seconds
+    
+    return () => clearInterval(cloudSyncInterval);
+  }, [user, syncConflict]);
 
   // Simulation loop - with mobile performance optimization
   useEffect(() => {
@@ -924,11 +1010,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const setDayNightMode = useCallback((mode: DayNightMode) => {
     setDayNightModeState(mode);
     saveDayNightMode(mode);
-  }, []);
-
-  const setIsSidebarCollapsed = useCallback((collapsed: boolean) => {
-    setIsSidebarCollapsedState(collapsed);
-    saveSidebarCollapsed(collapsed);
   }, []);
 
   // Compute the visual hour based on the day/night mode override
@@ -1252,6 +1333,201 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.id]);
 
+  // Resolve sync conflict between local and cloud cities
+  const resolveSyncConflict = useCallback(async (resolution: 'local' | 'cloud' | 'merge') => {
+    if (!user || !syncConflict) return;
+    
+    // Clear the dialog immediately for better UX
+    const conflict = syncConflict;
+    setSyncConflict(null);
+    
+    try {
+      setIsSyncing(true);
+      
+      if (resolution === 'local') {
+        // Keep local cities, upload them to cloud in parallel
+        const uploadPromises = conflict.localCities.map(async (city) => {
+          const cityState = loadCityState(city.id);
+          if (cityState) {
+            await saveCloudCity(user.uid, cityState);
+          }
+        });
+        await Promise.all(uploadPromises);
+      } else if (resolution === 'cloud') {
+        // Use cloud cities, clear local
+        for (const city of conflict.localCities) {
+          deleteCityState(city.id);
+        }
+        saveSavedCitiesIndex([]);
+        setSavedCities([]);
+        
+        // Load the most recent cloud city as current game
+        if (conflict.cloudCities.length > 0) {
+          const mostRecent = conflict.cloudCities[0];
+          const cloudState = await loadCloudCity(user.uid, mostRecent.id);
+          if (cloudState) {
+            skipNextSaveRef.current = true;
+            setState((prev) => ({
+              ...cloudState,
+              gameVersion: (prev.gameVersion ?? 0) + 1,
+            }));
+          }
+        }
+      } else if (resolution === 'merge') {
+        // Upload local cities to cloud in parallel (only ones not already in cloud)
+        const uploadPromises = conflict.localCities
+          .filter(city => !conflict.cloudCities.some(c => c.id === city.id))
+          .map(async (city) => {
+            const cityState = loadCityState(city.id);
+            if (cityState) {
+              await saveCloudCity(user.uid, cityState);
+            }
+          });
+        await Promise.all(uploadPromises);
+      }
+      
+      // Refresh cloud cities list
+      const updated = await loadCloudCities(user.uid);
+      setCloudCities(updated);
+    } catch (e) {
+      console.error('Failed to resolve sync conflict:', e);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user, syncConflict]);
+
+  // Refresh cloud cities list
+  const refreshCloudCities = useCallback(async () => {
+    if (!user) return;
+    
+    try {
+      setIsSyncing(true);
+      const cities = await loadCloudCities(user.uid);
+      setCloudCities(cities);
+    } catch (e) {
+      console.error('Failed to refresh cloud cities:', e);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user]);
+
+  // Load a cloud city
+  const loadCloudSavedCity = useCallback(async (cityId: string): Promise<boolean> => {
+    if (!user) return false;
+    
+    try {
+      setIsSyncing(true);
+      const cityState = await loadCloudCity(user.uid, cityId);
+      if (!cityState) return false;
+      
+      // Perform migrations for backward compatibility
+      if (!cityState.adjacentCities) {
+        cityState.adjacentCities = [];
+      }
+      for (const city of cityState.adjacentCities) {
+        if (city.discovered === undefined) {
+          city.discovered = true;
+        }
+      }
+      if (!cityState.waterBodies) {
+        cityState.waterBodies = [];
+      }
+      if (!cityState.cities) {
+        cityState.cities = [{
+          id: cityState.id || 'default-city',
+          name: cityState.cityName || 'City',
+          bounds: {
+            minX: 0,
+            minY: 0,
+            maxX: (cityState.gridSize || 50) - 1,
+            maxY: (cityState.gridSize || 50) - 1,
+          },
+          economy: {
+            population: cityState.stats?.population || 0,
+            jobs: cityState.stats?.jobs || 0,
+            income: cityState.stats?.income || 0,
+            expenses: cityState.stats?.expenses || 0,
+            happiness: cityState.stats?.happiness || 50,
+            lastCalculated: 0,
+          },
+          color: '#3b82f6',
+        }];
+      }
+      if (cityState.effectiveTaxRate === undefined) {
+        cityState.effectiveTaxRate = cityState.taxRate ?? 9;
+      }
+      if (cityState.grid) {
+        for (let y = 0; y < cityState.grid.length; y++) {
+          for (let x = 0; x < cityState.grid[y].length; x++) {
+            if (cityState.grid[y][x]?.building && cityState.grid[y][x].building.constructionProgress === undefined) {
+              cityState.grid[y][x].building.constructionProgress = 100;
+            }
+            if (cityState.grid[y][x]?.building && cityState.grid[y][x].building.abandoned === undefined) {
+              cityState.grid[y][x].building.abandoned = false;
+            }
+          }
+        }
+      }
+      
+      skipNextSaveRef.current = true;
+      setState((prev) => ({
+        ...cityState,
+        gameVersion: (prev.gameVersion ?? 0) + 1,
+      }));
+      
+      // Also save to local storage
+      saveGameState(cityState);
+      
+      return true;
+    } catch (e) {
+      console.error('Failed to load cloud city:', e);
+      return false;
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user]);
+
+  // Delete a cloud city
+  const deleteCloudSavedCity = useCallback(async (cityId: string) => {
+    if (!user) return;
+    
+    try {
+      setIsSyncing(true);
+      await deleteCloudCity(user.uid, cityId);
+      
+      // Update local list
+      setCloudCities((prev) => prev.filter((c) => c.id !== cityId));
+    } catch (e) {
+      console.error('Failed to delete cloud city:', e);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user]);
+
+  // Rename a cloud city
+  const renameCloudSavedCity = useCallback(async (cityId: string, newName: string) => {
+    if (!user) return;
+    
+    try {
+      setIsSyncing(true);
+      await renameCloudCity(user.uid, cityId, newName);
+      
+      // Update local list
+      setCloudCities((prev) =>
+        prev.map((c) => (c.id === cityId ? { ...c, cityName: newName } : c))
+      );
+      
+      // If the current game is the one being renamed, update its state too
+      if (state.id === cityId) {
+        setState((prev) => ({ ...prev, cityName: newName }));
+      }
+    } catch (e) {
+      console.error('Failed to rename cloud city:', e);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [user, state.id]);
+
   const value: GameContextValue = {
     state,
     setTool,
@@ -1291,9 +1567,15 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     loadSavedCity,
     deleteSavedCity,
     renameSavedCity,
-    // Sidebar state
-    isSidebarCollapsed,
-    setIsSidebarCollapsed,
+    // Cloud sync
+    cloudCities,
+    isSyncing,
+    syncConflict,
+    resolveSyncConflict,
+    refreshCloudCities,
+    loadCloudSavedCity,
+    deleteCloudSavedCity,
+    renameCloudSavedCity,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

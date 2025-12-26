@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
+import { AuthProvider } from '@/context/AuthContext';
 import { GameProvider } from '@/context/GameContext';
 import Game from '@/components/Game';
 import { useMobile } from '@/hooks/useMobile';
@@ -280,11 +281,13 @@ export default function HomePage() {
 
   if (showGame) {
     return (
-      <GameProvider>
-        <main className="h-screen w-screen overflow-hidden">
-          <Game onExit={handleExitGame} />
-        </main>
-      </GameProvider>
+      <AuthProvider>
+        <GameProvider>
+          <main className="h-screen w-screen overflow-hidden">
+            <Game onExit={handleExitGame} />
+          </main>
+        </GameProvider>
+      </AuthProvider>
     );
   }
 

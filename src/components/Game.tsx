@@ -29,6 +29,7 @@ import { ShortcutsHelpPanel } from '@/components/game/ShortcutsHelpPanel';
 import { MiniMap } from '@/components/game/MiniMap';
 import { TopBar, StatsPanel } from '@/components/game/TopBar';
 import { CanvasIsometricGrid } from '@/components/game/CanvasIsometricGrid';
+import { SyncConflictDialog } from '@/components/game/SyncConflictDialog';
 
 // Cargo type names for notifications
 const CARGO_TYPE_NAMES = ['containers', 'bulk materials', 'oil'];
@@ -222,6 +223,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
           {state.activePanel === 'settings' && <SettingsPanel />}
           
           <VinnieDialog open={showVinnieDialog} onOpenChange={setShowVinnieDialog} />
+          <SyncConflictDialog />
         </div>
       </TooltipProvider>
     );
@@ -259,6 +261,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
         <VinnieDialog open={showVinnieDialog} onOpenChange={setShowVinnieDialog} />
         <ShortcutsHelpPanel open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
         <CommandMenu />
+        <SyncConflictDialog />
       </div>
     </TooltipProvider>
   );

@@ -28,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { AccountMenu } from '@/components/game/AccountMenu';
 
 // Sun/Moon icon for time of day
 function TimeOfDayIcon({ hour }: { hour: number }) {
@@ -421,6 +422,16 @@ export function MobileTopBar({
               <div className="flex justify-between mt-1 text-[10px] text-muted-foreground">
                 <span>0%</span>
                 <span>100%</span>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Account/Cloud Sync */}
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Cloud Sync</span>
+                <AccountMenu />
               </div>
             </div>
           </Card>

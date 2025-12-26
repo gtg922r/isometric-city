@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Tool, TOOL_INFO } from '@/types/game';
+import { OverlayMode } from '@/components/game/types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -214,8 +215,6 @@ const toolCategories = {
   'COMMUNITY': ['community_center', 'animal_pens_farm', 'office_building_small'] as Tool[],
   'SPECIAL': ['stadium', 'museum', 'airport', 'space_program', 'city_hall', 'amusement_park'] as Tool[],
 };
-
-type OverlayMode = 'none' | 'power' | 'water' | 'fire' | 'police' | 'health' | 'education' | 'subway';
 
 interface MobileToolbarProps {
   onOpenPanel: (panel: 'budget' | 'statistics' | 'advisors' | 'settings') => void;
