@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { CloseIcon } from '@/components/ui/Icons';
+import { BuildingUpgradeUI } from '../BuildingUpgradeUI';
 
 interface TileInfoPanelProps {
   tile: Tile;
@@ -20,13 +21,17 @@ interface TileInfoPanelProps {
   };
   onClose: () => void;
   isMobile?: boolean;
+  money?: number;
+  onUpgrade?: (x: number, y: number) => void;
 }
 
 export function TileInfoPanel({ 
   tile, 
   services, 
   onClose,
-  isMobile = false
+  isMobile = false,
+  money,
+  onUpgrade
 }: TileInfoPanelProps) {
   const { x, y } = tile;
   
@@ -34,6 +39,9 @@ export function TileInfoPanel({
     <Card 
       className={`${isMobile ? 'fixed left-0 right-0 w-full rounded-none border-x-0 border-t border-b z-30' : 'absolute top-4 right-4 w-72'}`} 
       style={isMobile ? { top: 'calc(72px + env(safe-area-inset-top, 0px))' } : undefined}
+      onPointerDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-sm font-sans">Tile ({x}, {y})</CardTitle>
@@ -112,7 +120,7 @@ export function TileInfoPanel({
         <Separator />
         <div className="text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Service Coverage</div>
         
-        <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="grid grid-cols-2 gap-2 text-xs mb-3">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Police</span>
             <span>{Math.round(services.police[y][x])}%</span>
@@ -130,6 +138,14 @@ export function TileInfoPanel({
             <span>{Math.round(services.education[y][x])}%</span>
           </div>
         </div>
+
+        {money !== undefined && onUpgrade && (
+          <BuildingUpgradeUI 
+            tile={tile} 
+            money={money} 
+            onUpgrade={onUpgrade} 
+          />
+        )}
       </CardContent>
     </Card>
   );

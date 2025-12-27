@@ -237,6 +237,7 @@ export interface Building {
   bridgeIndex?: number; // Index of this tile within the bridge (0-based)
   bridgeSpan?: number; // Total number of tiles in this bridge
   bridgeTrackType?: BridgeTrackType; // What the bridge carries: 'road' or 'rail'
+  isUpgraded?: boolean; // Whether the building has been upgraded
 }
 
 // City definition for multi-city maps
@@ -390,6 +391,15 @@ export interface GameState {
   waterBodies: WaterBody[];
   gameVersion: number; // Increments when a new game starts - used to clear transient state like vehicles
   cities: City[]; // Cities in the map (for multi-city support)
+  lastUpgradeEvent?: UpgradeEvent;
+}
+
+export interface UpgradeEvent {
+  x: number;
+  y: number;
+  buildingType: BuildingType;
+  cost: number;
+  timestamp: number;
 }
 
 // Saved city metadata for the multi-save system

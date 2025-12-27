@@ -16,6 +16,7 @@ import {
   createInitialGameState,
   DEFAULT_GRID_SIZE,
   placeBuilding,
+  upgradeBuilding as upgradeBuildingSim,
   placeSubway,
   placeWaterTerraform,
   placeLandTerraform,
@@ -58,6 +59,7 @@ type GameContextValue = {
   setActivePanel: (panel: GameState['activePanel']) => void;
   setBudgetFunding: (key: keyof Budget, funding: number) => void;
   placeAtTile: (x: number, y: number) => void;
+  upgradeBuilding: (x: number, y: number) => void;
   finishTrackDrag: (pathTiles: { x: number; y: number }[], trackType: 'road' | 'rail') => void; // Create bridges after road/rail drag
   connectToCity: (cityId: string) => void;
   discoverCity: (cityId: string) => void;
@@ -245,6 +247,10 @@ function loadGameState(): GameState | null {
               // Migrate abandoned property for existing buildings (they're not abandoned)
               if (parsed.grid[y][x]?.building && parsed.grid[y][x].building.abandoned === undefined) {
                 parsed.grid[y][x].building.abandoned = false;
+              }
+              // Migrate isUpgraded property for existing buildings (default to false)
+              if (parsed.grid[y][x]?.building && parsed.grid[y][x].building.isUpgraded === undefined) {
+                parsed.grid[y][x].building.isUpgraded = false;
               }
             }
           }
@@ -818,6 +824,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const upgradeBuilding = useCallback((x: number, y: number) => {
+    setState((prev) => upgradeBuildingSim(prev, x, y));
+  }, []);
+
   // Called after a road/rail drag operation to create bridges for water crossings
   const finishTrackDrag = useCallback((pathTiles: { x: number; y: number }[], trackType: 'road' | 'rail') => {
     setState((prev) => createBridgesOnPath(prev, pathTiles, trackType));
@@ -1021,6 +1031,10 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
               if (parsed.grid[y][x]?.building && parsed.grid[y][x].building.abandoned === undefined) {
                 parsed.grid[y][x].building.abandoned = false;
               }
+              // Migrate isUpgraded property for existing buildings (default to false)
+              if (parsed.grid[y][x]?.building && parsed.grid[y][x].building.isUpgraded === undefined) {
+                parsed.grid[y][x].building.isUpgraded = false;
+              }
             }
           }
         }
@@ -1208,6 +1222,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           if (cityState.grid[y][x]?.building && cityState.grid[y][x].building.abandoned === undefined) {
             cityState.grid[y][x].building.abandoned = false;
           }
+          if (cityState.grid[y][x]?.building && cityState.grid[y][x].building.isUpgraded === undefined) {
+            cityState.grid[y][x].building.isUpgraded = false;
+          }
         }
       }
     }
@@ -1269,6 +1286,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setActivePanel,
     setBudgetFunding,
     placeAtTile,
+    upgradeBuilding,
     finishTrackDrag,
     connectToCity,
     discoverCity,
