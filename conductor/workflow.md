@@ -234,6 +234,11 @@ Before marking any task complete, verify:
 - Verify responsive layouts
 - Check performance on 3G/4G
 
+### Upstream Sync Verification
+- **Hybrid Protocol:** Every sync track MUST use the hybrid verification protocol.
+- **Automated Regression:** Run full project tests to ensure "Safe" upstream changes didn't break core logic.
+- **Manual Feature Audit:** Perform mandatory manual verification (Checkpoint Protocol) for all files identified in the "Intersection Report" to ensure fork-specific features (Building Upgrades, etc.) remain intact.
+
 ## Code Review Process
 
 ### Self-Review Checklist
