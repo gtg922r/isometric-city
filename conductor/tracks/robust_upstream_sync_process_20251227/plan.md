@@ -10,14 +10,14 @@ Create the source of truth for all fork-exclusive functionality.
 - [x] Task: Populate `FORK_FEATURES.md` with entries for "Building Upgrades", "Target Level Overlay", and any other divergent features, including their core files and protection rules. [59ff794]
 - [x] Task: Conductor - User Manual Verification 'Feature Registry Initialization' (Protocol in workflow.md)
 
-## Phase 2: Workflow & Product Documentation
+## Phase 2: Workflow & Product Documentation [checkpoint: e2bd0fa]
 Integrate the sync process into the core Conductor documentation.
 
 - [x] Task: Update `conductor/workflow.md` to include a new "Upstream Sync Workflow" section. [3ca9672]
 - [x] Task: Define the "Conflict Analysis" phase in the workflow, including the requirement for git commit log review. [3ca9672]
 - [x] Task: Define the "Decision Matrix" rules (`TAKE_UPSTREAM`, `KEEP_FORK`, `HYBRID`) in the workflow. [3ca9672]
 - [x] Task: Update `conductor/product.md` with a section on "Fork Robustness & Maintenance Philosophy." [5b80078]
-- [ ] Task: Conductor - User Manual Verification 'Workflow & Product Documentation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Workflow & Product Documentation' (Protocol in workflow.md)
 
 ## Phase 3: Templates & Verification Logic
 Establish the tools for executing the sync track.
