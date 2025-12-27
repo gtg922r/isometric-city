@@ -13,10 +13,10 @@ Create the source of truth for all fork-exclusive functionality.
 ## Phase 2: Workflow & Product Documentation
 Integrate the sync process into the core Conductor documentation.
 
-- [ ] Task: Update `conductor/workflow.md` to include a new "Upstream Sync Workflow" section.
-- [ ] Task: Define the "Conflict Analysis" phase in the workflow, including the requirement for git commit log review.
-- [ ] Task: Define the "Decision Matrix" rules (`TAKE_UPSTREAM`, `KEEP_FORK`, `HYBRID`) in the workflow.
-- [ ] Task: Update `conductor/product.md` with a section on "Fork Robustness & Maintenance Philosophy."
+- [x] Task: Update `conductor/workflow.md` to include a new "Upstream Sync Workflow" section. [3ca9672]
+- [x] Task: Define the "Conflict Analysis" phase in the workflow, including the requirement for git commit log review. [3ca9672]
+- [x] Task: Define the "Decision Matrix" rules (`TAKE_UPSTREAM`, `KEEP_FORK`, `HYBRID`) in the workflow. [3ca9672]
+- [x] Task: Update `conductor/product.md` with a section on "Fork Robustness & Maintenance Philosophy." [5b80078]
 - [ ] Task: Conductor - User Manual Verification 'Workflow & Product Documentation' (Protocol in workflow.md)
 
 ## Phase 3: Templates & Verification Logic
