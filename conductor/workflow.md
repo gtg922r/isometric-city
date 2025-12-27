@@ -144,8 +144,9 @@ All tasks follow a strict lifecycle:
 
 2.  **Conflict Analysis (Phase 1 of Track):**
     -   **Context Gathering:** Review the git commit log between your current branch and the upstream target (e.g., `git log HEAD..upstream/main --oneline`). Use this to understand the rationale behind changes.
-    -   **Intersection Check:** Identify all files changed upstream that intersect with features listed in `FORK_FEATURES.md`.
-    -   **Impact Report:** Generate an "Upstream Impact Report" (see Template) listing intersection zones and non-intersecting "Safe" changes.
+        - **Intersection Check:** Identify all files changed upstream that intersect with features listed in `FORK_FEATURES.md`.
+        - **Impact Report:** Generate an "Upstream Impact Report" using the [template](./templates/upstream_impact_report.md) listing intersection zones and non-intersecting "Safe" changes.
+    
 
 3.  **Decision Matrix (Phase 1 of Track):**
     -   For every intersection or logical conflict identified, record a decision in the track's `spec.md` or `plan.md`:
