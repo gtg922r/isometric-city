@@ -1,9 +1,9 @@
 # Plan: Demand Report Modal Implementation
 
 ## Phase 1: Demand Breakdown Logic (TDD)
-- [ ] Task: Create `src/lib/demandUtils.ts` to isolate demand calculation logic.
-- [ ] Task: Implement `calculateDemandBreakdown(state: GameState)` replicating `simulation.ts` logic for estimation.
-- [ ] Task: Write unit tests in `src/lib/__tests__/demandUtils.test.ts` to verify breakdown factors (Base, Tax, Bonuses).
+- [x] Task: Create `src/lib/demandUtils.ts` to isolate demand calculation logic. a9c8d39
+- [x] Task: Implement `calculateDemandBreakdown(state: GameState)` replicating `simulation.ts` logic for estimation. a9c8d39
+- [x] Task: Write unit tests in `src/lib/__tests__/demandUtils.test.ts` to verify breakdown factors (Base, Tax, Bonuses). a9c8d39
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Demand Breakdown Logic' (Protocol in workflow.md)
 
 ## Phase 2: Demand Report Modal Component
