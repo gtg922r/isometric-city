@@ -22,6 +22,6 @@ Integrate the sync process into the core Conductor documentation.
 ## Phase 3: Templates & Verification Logic
 Establish the tools for executing the sync track.
 
-- [ ] Task: Create a template for the "Upstream Impact Report" and include it in `conductor/workflow.md` or as a separate markdown file in `conductor/templates/`.
-- [ ] Task: Update the "Verification" section of `workflow.md` to explicitly require hybrid verification (Automated + Checkpoint Protocol) for sync tracks.
+- [x] Task: Create a template for the "Upstream Impact Report" and include it in `conductor/workflow.md` or as a separate markdown file in `conductor/templates/`. [c3579db]
+- [x] Task: Update the "Verification" section of `workflow.md` to explicitly require hybrid verification (Automated + Checkpoint Protocol) for sync tracks. [443f61a]
 - [ ] Task: Conductor - User Manual Verification 'Templates & Verification Logic' (Protocol in workflow.md)
