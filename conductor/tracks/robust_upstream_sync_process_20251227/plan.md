@@ -6,8 +6,8 @@ This plan establishes the foundation and formal procedures for managing upstream
 Create the source of truth for all fork-exclusive functionality.
 
 - [x] Task: Create `FORK_FEATURES.md` at the project root. [663d9cd]
-- [ ] Task: Analyze the `conductor/archive` and recent git history to identify all divergent features.
-- [ ] Task: Populate `FORK_FEATURES.md` with entries for "Building Upgrades", "Target Level Overlay", and any other divergent features, including their core files and protection rules.
+- [x] Task: Analyze the `conductor/archive` and recent git history to identify all divergent features. [804ec92]
+- [x] Task: Populate `FORK_FEATURES.md` with entries for "Building Upgrades", "Target Level Overlay", and any other divergent features, including their core files and protection rules. [59ff794]
 - [ ] Task: Conductor - User Manual Verification 'Feature Registry Initialization' (Protocol in workflow.md)
 
 ## Phase 2: Workflow & Product Documentation
