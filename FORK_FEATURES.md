@@ -7,7 +7,7 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 | Feature Name | Status | Primary Files | Description |
 |--------------|--------|---------------|-------------|
 | Building Upgrades | Completed | `src/config/buildingUpgrades.ts`, `src/lib/upgradeUtils.ts`, `src/lib/simulation.ts` | Modular system to enhance service buildings with increased range and efficiency. |
-| Target Level Overlay | Completed | `src/lib/simulation.ts`, `src/components/game/CanvasIsometricGrid.tsx` | Visual feedback showing the potential growth level of zoned buildings. |
+| Target Level Overlay | Completed | `src/lib/simulation.ts`, `src/components/game/overlays.ts` | Visual feedback showing the potential growth level of zoned buildings. |
 | Advanced Shortcuts & Cycling | Completed | `src/hooks/useGameKeyboard.ts`, `src/components/game/ModeIndicator.tsx` | Category-based shortcut cycling (e.g., 'S' for Services) and improved discoverability. |
 | Integrated Player Guide | Completed | `PLAYER_GUIDE.md` | Comprehensive in-repo documentation of simulation mechanics. |
 
@@ -29,10 +29,10 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 - **Primary Owner:** Fork
 - **Protection Rules:**
     - Preserve the `calculateTargetLevel` export in `src/lib/simulation.ts`.
-    - Preserve the 'targetLevel' case in the overlay rendering loop within `src/components/game/CanvasIsometricGrid.tsx`.
+    - Preserve the 'target_level' case in `src/components/game/overlays.ts`.
 - **Key Files:**
     - `src/lib/simulation.ts` (calculateTargetLevel)
-    - `src/components/game/CanvasIsometricGrid.tsx` (Overlay rendering)
+    - `src/components/game/overlays.ts` (Overlay logic)
 
 ### [Advanced Shortcuts & Cycling]
 - **Primary Owner:** Fork

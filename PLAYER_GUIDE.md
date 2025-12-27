@@ -22,7 +22,7 @@ Service buildings provide essential coverage to your city. They function based o
 | **Fire Station** | $500 | 1x1 | 18 | Extinguishes fires, Safety +10% locally. |
 | **School** | $400 | 2x2 | 11 | Basic Education. |
 | **University** | $2,000 | 3x3 | 19 | Advanced Education. |
-| **Hospital** | $1,000 | 2x2 | 12 | Public Health. |
+| **Hospital** | $1,000 | 2x2 | 24 | Public Health. |
 
 ### Infrastructure & Utilities
 | Building | Cost | Size | Range | Description |
