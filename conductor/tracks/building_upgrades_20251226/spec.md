@@ -6,7 +6,7 @@ This track introduces a building upgrade system for core service buildings. Play
 ## Functional Requirements
 
 ### 1. Upgrade Configuration
-- **Target Buildings:** Power Plant, Water Tower, Police Station, Fire Station.
+- **Target Buildings:** Power Plant, Water Tower, Police Station, Fire Station, School, University, Hospital.
 - **Data Structure:**
     - Definitions will be stored in a new, separate configuration file (`src/config/buildingUpgrades.ts`).
     - **Schema:** The configuration must support arbitrary overrides per building type (not hardcoded formulas), including:
