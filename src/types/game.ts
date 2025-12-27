@@ -367,6 +367,24 @@ export interface WaterBody {
   centerY: number;
 }
 
+export interface DemandFactor {
+  name: string;
+  value: number;
+  description?: string;
+}
+
+export interface DemandCategoryBreakdown {
+  total: number;
+  factors: DemandFactor[];
+  advice: string;
+}
+
+export interface DemandReport {
+  residential: DemandCategoryBreakdown;
+  commercial: DemandCategoryBreakdown;
+  industrial: DemandCategoryBreakdown;
+}
+
 export interface GameState {
   id: string; // Unique UUID for this game
   grid: Tile[][];
