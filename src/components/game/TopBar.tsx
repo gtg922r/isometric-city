@@ -105,14 +105,18 @@ interface DemandIndicatorProps {
   label: string;
   demand: number;
   color: string;
+  onClick?: () => void;
 }
 
-export function DemandIndicator({ label, demand, color }: DemandIndicatorProps) {
+export function DemandIndicator({ label, demand, color, onClick }: DemandIndicatorProps) {
   const height = Math.abs(demand) / 2;
   const isPositive = demand >= 0;
   
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div 
+      className="flex flex-col items-center gap-1 cursor-help hover:opacity-80 transition-opacity"
+      onClick={onClick}
+    >
       <span className={`text-[10px] font-bold ${color}`}>{label}</span>
       <div className="w-3 h-8 bg-secondary relative rounded-sm overflow-hidden">
         <div className="absolute left-0 right-0 top-1/2 h-px bg-border" />
@@ -173,7 +177,13 @@ export const StatsPanel = React.memo(function StatsPanel() {
 // TOP BAR
 // ============================================================================
 
-export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: () => void }) {
+export const TopBar = React.memo(function TopBar({ 
+  onShowHelp,
+  onShowDemandReport,
+}: { 
+  onShowHelp?: () => void;
+  onShowDemandReport?: () => void;
+}) {
   const { state, setSpeed, setTaxRate, isSaving, visualHour } = useGame();
   const { stats, year, month, day, speed, taxRate, cityName } = state;
   const m = useMessages();
@@ -255,11 +265,28 @@ export const TopBar = React.memo(function TopBar({ onShowHelp }: { onShowHelp?: 
         
         <Separator orientation="vertical" className="h-8" />
         
-        <div className="flex items-center gap-1.5">
-          <DemandIndicator label="R" demand={stats.demand.residential} color="text-green-500" />
-          <DemandIndicator label="C" demand={stats.demand.commercial} color="text-blue-500" />
-          <DemandIndicator label="I" demand={stats.demand.industrial} color="text-amber-500" />
-        </div>
+        <ShortcutTooltip content={msg('Open Demand Report')} shortcut="D">
+          <div className="flex items-center gap-1.5">
+            <DemandIndicator 
+              label="R" 
+              demand={stats.demand.residential} 
+              color="text-green-500" 
+              onClick={onShowDemandReport}
+            />
+            <DemandIndicator 
+              label="C" 
+              demand={stats.demand.commercial} 
+              color="text-blue-500" 
+              onClick={onShowDemandReport}
+            />
+            <DemandIndicator 
+              label="I" 
+              demand={stats.demand.industrial} 
+              color="text-amber-500" 
+              onClick={onShowDemandReport}
+            />
+          </div>
+        </ShortcutTooltip>
         
         <Separator orientation="vertical" className="h-8" />
         

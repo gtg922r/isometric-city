@@ -15,6 +15,7 @@ export const KEYBOARD_SHORTCUTS = {
   
   // Future/Suggested
   ROAD: { key: 'r', label: 'R' },
+  DEMAND: { key: 'd', label: 'D' },
   RESIDENTIAL: { key: '1', label: '1' },
   COMMERCIAL: { key: '2', label: '2' },
   INDUSTRIAL: { key: '3', label: '3' },

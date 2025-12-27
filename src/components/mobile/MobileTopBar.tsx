@@ -110,11 +110,13 @@ export function MobileTopBar({
   services, 
   onCloseTile,
   onExit,
+  onShowDemandReport,
 }: { 
   selectedTile: Tile | null;
   services: { police: number[][]; fire: number[][]; health: number[][]; education: number[][]; power: boolean[][]; water: boolean[][] };
   onCloseTile: () => void;
   onExit?: () => void;
+  onShowDemandReport?: () => void;
 }) {
   const { state, setSpeed, setTaxRate, visualHour, saveCity } = useGame();
   const { stats, year, month, speed, taxRate, cityName } = state;
@@ -245,7 +247,10 @@ export function MobileTopBar({
 
         {/* Demand indicators row */}
         <div className="flex items-center justify-between px-3 py-1 border-t border-sidebar-border/50 bg-secondary/30">
-          <div className="flex items-center gap-3">
+          <div 
+            className="flex items-center gap-3 active:opacity-60 cursor-pointer"
+            onClick={onShowDemandReport}
+          >
             <DemandBar label="R" demand={stats.demand.residential} color="text-green-500" />
             <DemandBar label="C" demand={stats.demand.commercial} color="text-blue-500" />
             <DemandBar label="I" demand={stats.demand.industrial} color="text-amber-500" />

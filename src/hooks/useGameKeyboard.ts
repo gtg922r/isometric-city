@@ -10,6 +10,7 @@ interface UseGameKeyboardProps {
   selectedTile: { x: number; y: number } | null;
   setSelectedTile: (tile: { x: number; y: number } | null) => void;
   onToggleHelp?: () => void;
+  onShowDemandReport?: () => void;
 }
 
 export function useGameKeyboard({
@@ -18,6 +19,7 @@ export function useGameKeyboard({
   selectedTile,
   setSelectedTile,
   onToggleHelp,
+  onShowDemandReport,
 }: UseGameKeyboardProps) {
   const { state, setTool, setActivePanel, setSpeed } = useGame();
 
@@ -60,6 +62,9 @@ export function useGameKeyboard({
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault();
         setTool('road');
+      } else if (e.key === 'd' || e.key === 'D') {
+        e.preventDefault();
+        onShowDemandReport?.();
       } else if (e.key === '1') {
         e.preventDefault();
         setTool('zone_residential');

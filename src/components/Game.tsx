@@ -29,6 +29,7 @@ import {
   AdvisorsPanel,
 } from '@/components/game/panels';
 import { ShortcutsHelpPanel } from '@/components/game/ShortcutsHelpPanel';
+import { DemandReportModal } from '@/components/game/DemandReportModal';
 import { MiniMap } from '@/components/game/MiniMap';
 import { TopBar, StatsPanel } from '@/components/game/TopBar';
 import { CanvasIsometricGrid } from '@/components/game/CanvasIsometricGrid';
@@ -45,6 +46,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
   const [navigationTarget, setNavigationTarget] = useState<{ x: number; y: number } | null>(null);
   const [viewport, setViewport] = useState<{ offset: { x: number; y: number }; zoom: number; canvasSize: { width: number; height: number } } | null>(null);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+  const [showDemandReport, setShowDemandReport] = useState(false);
   const isInitialMount = useRef(true);
   const { isMobileDevice, isSmallScreen } = useMobile();
   const isMobile = isMobileDevice || isSmallScreen;
@@ -143,6 +145,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
     selectedTile,
     setSelectedTile,
     onToggleHelp: () => setShowShortcutsHelp(prev => !prev),
+    onShowDemandReport: () => setShowDemandReport(prev => !prev),
   });
 
   // Handle cheat code triggers
@@ -245,6 +248,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
             services={state.services}
             onCloseTile={() => setSelectedTile(null)}
             onExit={onExit}
+            onShowDemandReport={() => setShowDemandReport(true)}
           />
           
           {/* Main canvas area - fills remaining space, with padding for top/bottom bars */}
@@ -273,6 +277,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
           {state.activePanel === 'settings' && <SettingsPanel />}
           
           <VinnieDialog open={showVinnieDialog} onOpenChange={setShowVinnieDialog} />
+          <DemandReportModal open={showDemandReport} onOpenChange={setShowDemandReport} />
           
           {/* Tip Toast for helping new players */}
           <TipToast
@@ -293,7 +298,10 @@ export default function Game({ onExit }: { onExit?: () => void }) {
         <Sidebar onExit={onExit} />
         
         <div className="flex-1 flex flex-col">
-          <TopBar onShowHelp={() => setShowShortcutsHelp(true)} />
+          <TopBar 
+            onShowHelp={() => setShowShortcutsHelp(true)} 
+            onShowDemandReport={() => setShowDemandReport(true)}
+          />
           <StatsPanel />
           <div className="flex-1 relative overflow-visible">
             <CanvasIsometricGrid 
@@ -317,6 +325,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
         
         <VinnieDialog open={showVinnieDialog} onOpenChange={setShowVinnieDialog} />
         <ShortcutsHelpPanel open={showShortcutsHelp} onOpenChange={setShowShortcutsHelp} />
+        <DemandReportModal open={showDemandReport} onOpenChange={setShowDemandReport} />
         <CommandMenu />
         
         {/* Tip Toast for helping new players */}

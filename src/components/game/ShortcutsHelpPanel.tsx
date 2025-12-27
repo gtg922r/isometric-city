@@ -43,6 +43,7 @@ export function ShortcutsHelpPanel({ open, onOpenChange }: ShortcutsHelpPanelPro
       title: 'Game Controls',
       items: [
         { label: 'Pause / Unpause', key: KEYBOARD_SHORTCUTS.PAUSE.label },
+        { label: 'Demand Report', key: KEYBOARD_SHORTCUTS.DEMAND.label },
         { label: 'Search / Command Menu', key: KEYBOARD_SHORTCUTS.SEARCH.label },
       ],
     },
