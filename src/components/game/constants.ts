@@ -40,8 +40,8 @@ export const PEDESTRIAN_SPAWN_INTERVAL = 0.03;      // Seconds between spawn bat
 export const PEDESTRIAN_UPDATE_SKIP_DISTANCE = 30;  // Skip detailed updates for pedestrians this far from view
 
 // Zoom limits for camera
-export const ZOOM_MIN = 0.15;                     // Minimum zoom level (most zoomed out - for large maps/multiple cities)
-export const ZOOM_MAX = 5;                        // Maximum zoom level (most zoomed in)
+export const ZOOM_MIN = 0.3;                      // Minimum zoom level (most zoomed out - for large maps/multiple cities)
+export const ZOOM_MAX = 5;                       // Maximum zoom level (most zoomed in)
 
 // Zoom thresholds for rendering detail elements
 // Lower values = more zoomed out, higher values = more zoomed in required
@@ -271,3 +271,9 @@ export const MAX_TRAINS = 35;                      // Maximum trains in city
 export const HELICOPTER_MIN_ZOOM = 0.3;           // Minimum zoom to show helicopters
 export const SMOG_MIN_ZOOM = 0.35;                // Minimum zoom to show factory smog
 export const FIREWORK_MIN_ZOOM = 0.3;             // Minimum zoom to show fireworks
+
+// PERF: Pre-computed building type sets for O(1) lookups during lighting calculations
+// These are module-level constants to avoid allocating on every render frame
+export const NON_LIT_BUILDING_TYPES = new Set(['grass', 'empty', 'water', 'road', 'tree', 'park', 'park_large', 'tennis']);
+export const RESIDENTIAL_BUILDING_TYPES = new Set(['house_small', 'house_medium', 'mansion', 'apartment_low', 'apartment_high']);
+export const COMMERCIAL_BUILDING_TYPES = new Set(['shop_small', 'shop_medium', 'office_low', 'office_high', 'mall']);

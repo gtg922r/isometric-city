@@ -1,8 +1,33 @@
 'use client';
 
 import React, { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import { msg, useMessages } from 'gt-next';
 import { useGame } from '@/context/GameContext';
 import { Tool, TOOL_INFO } from '@/types/game';
+
+// Translatable category labels
+const CATEGORY_LABELS: Record<string, unknown> = {
+  TOOLS: msg('Tools'),
+  ZONES: msg('Zones'),
+  tools: msg('Tools'),
+  zones: msg('Zones'),
+  zoning: msg('Zoning'),
+  services: msg('Services'),
+  parks: msg('Parks'),
+  sports: msg('Sports'),
+  waterfront: msg('Waterfront'),
+  community: msg('Community'),
+  utilities: msg('Utilities'),
+  special: msg('Special'),
+};
+
+// UI labels for translation
+const UI_LABELS = {
+  budget: msg('Budget'),
+  statistics: msg('Statistics'),
+  advisors: msg('Advisors'),
+  settings: msg('Settings'),
+};
 import {
   BudgetIcon,
   ChartIcon,
@@ -104,7 +129,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   isCollapsed = false,
   iconKey,
 }: {
-  label: string;
+  label: unknown; // Message object from msg() for translation
   tools: Tool[];
   selectedTool: Tool;
   money: number;
@@ -120,6 +145,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
   const submenuRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastMousePos = useRef<{ x: number; y: number } | null>(null);
+  const m = useMessages();
   
   const hasSelectedTool = tools.includes(selectedTool);
   const SUBMENU_GAP = isCollapsed ? 8 : 12; // Gap between sidebar and submenu
@@ -254,7 +280,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
             {buttonContent}
           </TooltipTrigger>
           <TooltipContent side="right" className="flex items-center gap-2">
-            <span>{label}</span>
+            <span>{m(label as Parameters<typeof m>[0])}</span>
             {shortcut && <span className="text-[10px] font-mono opacity-70">({shortcut.toUpperCase()})</span>}
           </TooltipContent>
         </Tooltip>
@@ -295,7 +321,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
           onMouseLeave={handleSubmenuLeave}
         >
           <div className="px-3 py-2 border-b border-sidebar-border/50 bg-muted/30 flex justify-between items-center">
-            <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">{label}</span>
+            <span className="text-[10px] font-bold tracking-widest text-muted-foreground uppercase">{m(label as Parameters<typeof m>[0])}</span>
             {shortcut && <span className="text-[10px] font-mono text-muted-foreground opacity-70">({shortcut.toUpperCase()})</span>}
           </div>
           <div className="p-1.5 flex flex-col gap-0.5 max-h-48 overflow-y-auto">
@@ -309,7 +335,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
               const tooltipContent = `${info.description}${info.cost > 0 ? ` - Cost: $${info.cost}` : ''}`;
               
               return (
-                <ShortcutTooltip key={tool} content={tooltipContent}>
+                <ShortcutTooltip key={tool} content={m(info.description) + (info.cost > 0 ? ` - Cost: $${info.cost}` : '')}>
                   <Button
                     onClick={() => onSelectTool(tool)}
                     disabled={!canAfford && info.cost > 0}
@@ -319,7 +345,7 @@ const HoverSubmenu = React.memo(function HoverSubmenu({
                     }`}
                   >
                     <span className="flex-1 text-left truncate">
-                      {info.name}
+                      {m(info.name)}
                     </span>
                     {info.cost > 0 && (
                       <span className={`text-xs ${isSelected ? 'opacity-80' : 'opacity-50'}`}>${info.cost.toLocaleString()}</span>
@@ -381,6 +407,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
   const { state, setTool, setActivePanel, saveCity, isSidebarCollapsed, setIsSidebarCollapsed } = useGame();
   const { selectedTool, stats, activePanel } = state;
   const [showExitDialog, setShowExitDialog] = useState(false);
+  const m = useMessages();
   
   const handleSaveAndExit = useCallback(() => {
     saveCity();
@@ -402,7 +429,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
   // Zoning submenu (shown under ZONES section, before BUILDINGS)
   const zoningSubmenu = useMemo(() => ({
     key: 'zoning',
-    label: 'Zoning',
+    label: CATEGORY_LABELS.zoning,
     tools: ['zone_dezone', 'zone_water', 'zone_land'] as Tool[],
     icon: 'zoning'
   }), []);
@@ -478,7 +505,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
           <div key={category} className="mb-1">
             {!isSidebarCollapsed && (
               <div className="px-4 py-2 text-[10px] font-bold tracking-widest text-muted-foreground">
-                {category}
+                {m((CATEGORY_LABELS[category] || category) as Parameters<typeof m>[0])}
               </div>
             )}
             <div className={`flex flex-col gap-0.5 ${isSidebarCollapsed ? 'px-1' : 'px-2'}`}>
@@ -504,7 +531,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                     {toolIcon && <div className="shrink-0">{toolIcon}</div>}
                     {!isSidebarCollapsed && (
                       <>
-                        <span className="flex-1 text-left truncate">{info.name}</span>
+                        <span className="flex-1 text-left truncate">{m(info.name)}</span>
                         {info.cost > 0 && (
                           <span className="text-xs opacity-60">${info.cost}</span>
                         )}
@@ -586,17 +613,18 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
       <div className={`border-t border-sidebar-border p-2 ${isSidebarCollapsed ? 'px-1' : 'p-2'}`}>
         <div className={`grid gap-1 ${isSidebarCollapsed ? 'grid-cols-1' : 'grid-cols-4'}`}>
           {[
-            { panel: 'budget' as const, icon: <BudgetIcon size={16} />, label: 'Budget' },
-            { panel: 'statistics' as const, icon: <ChartIcon size={16} />, label: 'Statistics' },
-            { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, label: 'Advisors' },
-            { panel: 'settings' as const, icon: <SettingsIcon size={16} />, label: 'Settings' },
-          ].map(({ panel, icon, label }) => {
+            { panel: 'budget' as const, icon: <BudgetIcon size={16} />, labelKey: 'budget' as const },
+            { panel: 'statistics' as const, icon: <ChartIcon size={16} />, labelKey: 'statistics' as const },
+            { panel: 'advisors' as const, icon: <AdvisorIcon size={16} />, labelKey: 'advisors' as const },
+            { panel: 'settings' as const, icon: <SettingsIcon size={16} />, labelKey: 'settings' as const },
+          ].map(({ panel, icon, labelKey }) => {
             const panelButton = (
               <Button
                 onClick={() => setActivePanel(activePanel === panel ? 'none' : panel)}
                 variant={activePanel === panel ? 'default' : 'ghost'}
                 size="icon-sm"
                 className="w-full"
+                title={String(m(UI_LABELS[labelKey]))}
               >
                 {icon}
               </Button>
@@ -608,7 +636,7 @@ export const Sidebar = React.memo(function Sidebar({ onExit }: { onExit?: () => 
                   {panelButton}
                 </TooltipTrigger>
                 <TooltipContent side={isSidebarCollapsed ? "right" : "top"}>
-                  {label}
+                  {m(UI_LABELS[labelKey])}
                 </TooltipContent>
               </Tooltip>
             );
