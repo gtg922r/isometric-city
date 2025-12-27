@@ -1,0 +1,8 @@
+{
+  "track_id": "demand_report_20251227",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2025-12-27T10:00:00Z",
+  "updated_at": "2025-12-27T10:00:00Z",
+  "description": "New feature - Demand Report Modal: Use can click on the demand charts (i.e. RCI bars) and bring up a demand report that describes the exact details of current demand as well as how that demand is calculated"
+}
