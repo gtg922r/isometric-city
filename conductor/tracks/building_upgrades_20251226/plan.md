@@ -31,7 +31,7 @@ Implement the user interface for upgrading buildings and the logic for processin
 - [x] Task: Write tests for the upgrade action, ensuring funds are deducted and the `isUpgraded` flag is set correctly. [7eb6acc]
 - [x] Task: Conductor - User Manual Verification 'UI & Upgrade Logic' (Protocol in workflow.md) [bbb381e]
 
-## Phase 4: Visuals & Feedback
+## Phase 4: Visuals & Feedback [checkpoint: 73de7df]
 Connect the upgraded state to the rendering engine and provide visual feedback to the player.
 
 - [x] Task: Update `src/components/buildings/IsometricBuildings.tsx` (or the main renderer) to use the `sprites_red_water_upgrade_buildings` sprite sheet when `isUpgraded` is true.
