@@ -4,6 +4,21 @@ import { MobileTopBar } from '../MobileTopBar';
 import { Tile } from '@/types/game';
 import { vi, describe, it, expect } from 'vitest';
 
+// Mock gt-next
+vi.mock('gt-next', () => ({
+  useMessages: () => (key: any) => key,
+  useGT: () => (key: any) => key,
+  msg: (key: any) => key,
+  T: ({ children }: any) => children,
+  Var: ({ children }: any) => children,
+}));
+
+vi.mock('gt-next/client', () => ({
+  useLocale: () => 'en',
+  useSetLocale: () => vi.fn(),
+  GTClientProvider: ({ children }: any) => children,
+}));
+
 // Mock GameContext
 const mockUseGame = vi.fn();
 vi.mock('@/context/GameContext', () => ({

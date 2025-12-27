@@ -20,7 +20,7 @@ export interface SpriteSourceResult {
   /** Path to the sprite sheet to use */
   source: string;
   /** Type of variant being used */
-  variantType: 'normal' | 'construction' | 'abandoned' | 'parks' | 'parksConstruction' | 'dense' | 'modern' | 'farm' | 'shop' | 'station';
+  variantType: 'normal' | 'construction' | 'upgrade' | 'abandoned' | 'parks' | 'parksConstruction' | 'dense' | 'modern' | 'farm' | 'shop' | 'station';
   /** Variant coordinates if using a variant sheet (row, col) */
   variant: { row: number; col: number } | null;
 }
@@ -64,13 +64,14 @@ export interface SpriteRenderInfo {
  * Priority order:
  * 1. Parks construction (parks building under construction)
  * 2. Construction (regular building under construction, phase 2)
- * 3. Abandoned (abandoned buildings)
- * 4. Parks (parks/recreation buildings)
- * 5. Dense/Modern variants (high-density building variants)
- * 6. Farm variants (low-density industrial)
- * 7. Shop variants (low-density commercial)
- * 8. Station variants (rail stations)
- * 9. Normal (default sprite sheet)
+ * 3. Upgraded (buildings with special upgraded appearance)
+ * 4. Abandoned (abandoned buildings)
+ * 5. Parks (parks/recreation buildings)
+ * 6. Dense/Modern variants (high-density building variants)
+ * 7. Farm variants (low-density industrial)
+ * 8. Shop variants (low-density commercial)
+ * 9. Station variants (rail stations)
+ * 10. Normal (default sprite sheet)
  */
 export function selectSpriteSource(
   buildingType: BuildingType,
@@ -84,6 +85,7 @@ export function selectSpriteSource(
   const constructionProgress = building.constructionProgress ?? 100;
   const isConstructionPhase = isUnderConstruction && constructionProgress >= 40;
   const isAbandoned = building.abandoned === true;
+  const isUpgraded = building.isUpgraded === true;
   
   // Check if this is a parks building
   const isParksBuilding = !!(activePack.parksBuildings && activePack.parksBuildings[buildingType]);
@@ -102,6 +104,15 @@ export function selectSpriteSource(
     return {
       source: activePack.constructionSrc,
       variantType: 'construction',
+      variant: null,
+    };
+  }
+
+  // Upgraded buildings
+  if (isUpgraded && activePack.upgradeSrc) {
+    return {
+      source: activePack.upgradeSrc,
+      variantType: 'upgrade',
       variant: null,
     };
   }
@@ -505,6 +516,10 @@ export function calculateSpriteScale(
     scaleMultiplier *= activePack.abandonedScales[buildingType];
   }
   
+  if (variantType === 'upgrade' && activePack.upgradeScales && (buildingType as string) in activePack.upgradeScales) {
+    scaleMultiplier *= (activePack.upgradeScales as any)[buildingType];
+  }
+  
   // Apply global scale from sprite pack
   const globalScale = activePack.globalScale ?? 1;
   scaleMultiplier *= globalScale;
@@ -546,6 +561,9 @@ export function calculateSpriteOffsets(
   } else if (isAbandoned && activePack.abandonedVerticalOffsets && 
              buildingType in activePack.abandonedVerticalOffsets) {
     verticalOffset = activePack.abandonedVerticalOffsets[buildingType];
+  } else if (variantType === 'upgrade' && activePack.upgradeVerticalOffsets && 
+             (buildingType as string) in activePack.upgradeVerticalOffsets) {
+    verticalOffset = (activePack.upgradeVerticalOffsets as any)[buildingType];
   } else if (isParksBuilding && activePack.parksVerticalOffsets && 
              buildingType in activePack.parksVerticalOffsets) {
     verticalOffset = activePack.parksVerticalOffsets[buildingType];

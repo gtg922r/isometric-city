@@ -19,6 +19,9 @@ export interface SpritePack {
   // Per-building-type vertical offset adjustments for UPGRADED sprites only
   // These override verticalOffsets when rendering upgraded buildings
   upgradeVerticalOffsets?: Record<string, number>;
+  // Per-building-type scale adjustments for UPGRADED sprites only
+  // Values are multiplied with the normal scale (e.g., 0.95 = 95% of normal size)
+  upgradeScales?: Record<string, number>;
   // Path to the abandoned sprite sheet (same layout, but buildings shown as abandoned/derelict)
   abandonedSrc?: string;
   // Path to the dense variants sprite sheet (alternative sprites for high-density buildings)

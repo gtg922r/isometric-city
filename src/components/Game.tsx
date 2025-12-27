@@ -292,7 +292,7 @@ export default function Game({ onExit }: { onExit?: () => void }) {
       <div className="w-full h-full min-h-[720px] overflow-hidden bg-background flex">
         <Sidebar onExit={onExit} />
         
-        <div className="flex-1 flex flex-col ml-56">
+        <div className="flex-1 flex flex-col">
           <TopBar onShowHelp={() => setShowShortcutsHelp(true)} />
           <StatsPanel />
           <div className="flex-1 relative overflow-visible">
