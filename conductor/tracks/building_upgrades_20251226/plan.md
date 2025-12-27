@@ -6,7 +6,7 @@ This plan outlines the steps to implement a modular building upgrade system, all
 Establish the data structures and configuration that will drive the upgrade system.
 
 - [x] Task: Update `Building` type in `src/types/game.ts` to include optional `isUpgraded?: boolean`.
-- [x] Task: Create `src/config/buildingUpgrades.ts` with the schema and initial data for Power Plant, Water Tower, Police Station, and Fire Station.
+- [x] Task: Create `src/config/buildingUpgrades.ts` with the schema and initial data for Power Plant, Water Tower, Police Station, Fire Station, School, University, and Hospital.
 - [x] Task: Create a utility `getBuildingStats` in a new file `src/lib/upgradeUtils.ts` to handle stat lookups (base vs. upgraded) to keep core simulation code clean.
 - [x] Task: Write unit tests to verify that `getBuildingStats` returns correct values for both normal and upgraded buildings.
 - [x] Task: Conductor - User Manual Verification 'Foundation & Configuration' (Protocol in workflow.md)
@@ -43,7 +43,7 @@ Connect the upgraded state to the rendering engine and provide visual feedback t
 ## Phase 5: Final Polish & Compatibility
 Ensure the system is robust and compatible with existing saves.
 
-- [x] Task: Verify backward compatibility by loading a pre-feature save file and ensuring no crashes occur. [e80b77b]
+- [~] Task: Verify backward compatibility by loading a pre-feature save file and ensuring no crashes occur. [e80b77b]
 - [ ] Task: Run full project linting and type checking (`npm run check`).
-- [ ] Task: Perform a final manual walkthrough of the upgrade flow for all 4 building types.
+- [ ] Task: Perform a final manual walkthrough of the upgrade flow for all 7 building types.
 - [ ] Task: Conductor - User Manual Verification 'Final Polish & Compatibility' (Protocol in workflow.md)
