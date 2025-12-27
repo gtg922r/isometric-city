@@ -5,5 +5,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 
-## [ ] Track: Demand Report Modal
+## [x] Track: Demand Report Modal
 *Link: [./conductor/tracks/demand_report_20251227/](./conductor/tracks/demand_report_20251227/)*

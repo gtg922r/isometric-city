@@ -20,8 +20,8 @@
 - [x] Task: Ensure the modal is accessible and readable on mobile in `src/components/mobile/MobileTopBar.tsx`. a67b48e
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Triggers' (Protocol in workflow.md) a67b48e
 
-## Phase 4: Polishing & Cleanup
-- [x] Task: Update `FORK_FEATURES.md` to include the Demand Report Modal.
-- [x] Task: Refine animations and styling to match the "zen" city-builder aesthetic.
-- [x] Task: Final pass on localization and string keys.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Polishing & Cleanup' (Protocol in workflow.md)
+## Phase 4: Polishing & Cleanup [checkpoint: e17f160]
+- [x] Task: Update `FORK_FEATURES.md` to include the Demand Report Modal. e17f160
+- [x] Task: Refine animations and styling to match the "zen" city-builder aesthetic. e17f160
+- [x] Task: Final pass on localization and string keys. e17f160
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Polishing & Cleanup' (Protocol in workflow.md) e17f160
