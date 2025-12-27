@@ -6,12 +6,12 @@
 - [x] Task: Write unit tests in `src/lib/__tests__/demandUtils.test.ts` to verify breakdown factors (Base, Tax, Bonuses). a9c8d39
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Demand Breakdown Logic' (Protocol in workflow.md)
 
-## Phase 2: Demand Report Modal Component
-- [ ] Task: Create `src/components/game/DemandReportModal.tsx` using `shadcn/ui` Dialog primitives.
-- [ ] Task: Implement the categorized layout (Residential, Commercial, Industrial).
-- [ ] Task: Add the detailed breakdown tables with icons and formatting for "positive/negative" impacts.
-- [ ] Task: Add localized actionable advice strings for each demand type.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Demand Report Modal Component' (Protocol in workflow.md)
+## Phase 2: Demand Report Modal Component [checkpoint: 6e7fb2d]
+- [x] Task: Create `src/components/game/DemandReportModal.tsx` using `shadcn/ui` Dialog primitives. 6e7fb2d
+- [x] Task: Implement the categorized layout (Residential, Commercial, Industrial). 6e7fb2d
+- [x] Task: Add the detailed breakdown tables with icons and formatting for "positive/negative" impacts. 6e7fb2d
+- [x] Task: Add localized actionable advice strings for each demand type. 6e7fb2d
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Demand Report Modal Component' (Protocol in workflow.md) 6e7fb2d
 
 ## Phase 3: Integration & Triggers
 - [ ] Task: Update `GameContext` or `Game.tsx` to manage the modal's open/close state.
