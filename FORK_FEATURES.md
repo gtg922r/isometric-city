@@ -9,6 +9,7 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 | Building Upgrades | Completed | `src/config/buildingUpgrades.ts`, `src/lib/upgradeUtils.ts`, `src/lib/simulation.ts` | Modular system to enhance service buildings with increased range and efficiency. |
 | Target Level Overlay | Completed | `src/lib/simulation.ts`, `src/components/game/overlays.ts` | Visual feedback showing the potential growth level of zoned buildings. |
 | Advanced Shortcuts & Cycling | Completed | `src/hooks/useGameKeyboard.ts`, `src/components/game/ModeIndicator.tsx` | Category-based shortcut cycling (e.g., 'S' for Services) and improved discoverability. |
+| Demand Report Modal | Completed | `src/lib/demandUtils.ts`, `src/components/game/DemandReportModal.tsx` | Transparency report explaining factors behind RCI demand (Tax, Jobs, etc.). |
 | Integrated Player Guide | Completed | `PLAYER_GUIDE.md` | Comprehensive in-repo documentation of simulation mechanics. |
 
 ## Detailed Feature Registry
@@ -42,6 +43,16 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 - **Key Files:**
     - `src/hooks/useGameKeyboard.ts`
     - `src/components/game/ModeIndicator.tsx`
+
+### [Demand Report Modal]
+- **Primary Owner:** Fork
+- **Protection Rules:**
+    - Do not overwrite `src/lib/demandUtils.ts` as it contains fork-specific transparency logic.
+    - Ensure `src/components/game/TopBar.tsx` and `src/components/mobile/MobileTopBar.tsx` keep the demand indicator click triggers.
+    - Preserve the 'D' shortcut in `src/hooks/useGameKeyboard.ts`.
+- **Key Files:**
+    - `src/lib/demandUtils.ts`
+    - `src/components/game/DemandReportModal.tsx`
 
 ### [Integrated Player Guide]
 - **Primary Owner:** Fork

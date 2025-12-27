@@ -21,7 +21,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Triggers' (Protocol in workflow.md) a67b48e
 
 ## Phase 4: Polishing & Cleanup
-- [ ] Task: Update `FORK_FEATURES.md` to include the Demand Report Modal.
-- [ ] Task: Refine animations and styling to match the "zen" city-builder aesthetic.
-- [ ] Task: Final pass on localization and string keys.
+- [x] Task: Update `FORK_FEATURES.md` to include the Demand Report Modal.
+- [x] Task: Refine animations and styling to match the "zen" city-builder aesthetic.
+- [x] Task: Final pass on localization and string keys.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Polishing & Cleanup' (Protocol in workflow.md)
