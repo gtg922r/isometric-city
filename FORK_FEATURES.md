@@ -6,17 +6,20 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 
 | Feature Name | Status | Primary Files | Description |
 |--------------|--------|---------------|-------------|
-| Building Upgrades | Completed | `src/config/buildingUpgrades.ts`, `src/lib/upgradeUtils.ts`, `src/lib/simulation.ts`, `src/components/game/BuildingUpgradeUI.tsx`, `src/context/GameContext.tsx` | Modular system to enhance service buildings with increased range and efficiency. |
+| Building Upgrades | Completed | `src/config/buildingUpgrades.ts`, `src/lib/upgradeUtils.ts`, `src/lib/simulation.ts` | Modular system to enhance service buildings with increased range and efficiency. |
 | Target Level Overlay | Completed | `src/lib/simulation.ts`, `src/components/game/CanvasIsometricGrid.tsx` | Visual feedback showing the potential growth level of zoned buildings. |
+| Advanced Shortcuts & Cycling | Completed | `src/hooks/useGameKeyboard.ts`, `src/components/game/ModeIndicator.tsx` | Category-based shortcut cycling (e.g., 'S' for Services) and improved discoverability. |
+| Integrated Player Guide | Completed | `PLAYER_GUIDE.md` | Comprehensive in-repo documentation of simulation mechanics. |
 
 ## Detailed Feature Registry
 
 ### [Building Upgrades]
 - **Primary Owner:** Fork
 - **Protection Rules:**
-    - Do not overwrite `upgradeUtils.ts`.
-    - Merges in `simulation.ts` (specifically `calculateServiceCoverage` and `updateBudgetCosts`) must preserve calls to `getBuildingRange`, `getBuildingMaintenance`, etc.
-    - `GameContext.tsx` must maintain the `upgradeBuilding` action and migration logic for `isUpgraded` property.
+    - Do not overwrite `src/lib/upgradeUtils.ts`.
+    - Merges in `src/lib/simulation.ts` (specifically `calculateServiceCoverage` and `updateBudgetCosts`) must preserve calls to `getBuildingRange`, `getBuildingMaintenance`, etc.
+    - `src/context/GameContext.tsx` must maintain the `upgradeBuilding` action and migration logic for `isUpgraded` property.
+    - `src/lib/shareState.ts` must maintain `isUpgraded` in the serialization/deserialization logic.
 - **Key Files:**
     - `src/config/buildingUpgrades.ts`
     - `src/lib/upgradeUtils.ts`
@@ -25,11 +28,27 @@ This file tracks all features unique to this fork of IsoCity. It serves as a ref
 ### [Target Level Overlay]
 - **Primary Owner:** Fork
 - **Protection Rules:**
-    - Preserve the `calculateTargetLevel` export in `simulation.ts`.
-    - Preserve the 'targetLevel' overlay rendering logic in `CanvasIsometricGrid.tsx`.
+    - Preserve the `calculateTargetLevel` export in `src/lib/simulation.ts`.
+    - Preserve the 'targetLevel' case in the overlay rendering loop within `src/components/game/CanvasIsometricGrid.tsx`.
 - **Key Files:**
     - `src/lib/simulation.ts` (calculateTargetLevel)
     - `src/components/game/CanvasIsometricGrid.tsx` (Overlay rendering)
+
+### [Advanced Shortcuts & Cycling]
+- **Primary Owner:** Fork
+- **Protection Rules:**
+    - Protect the cycling logic in `src/hooks/useGameKeyboard.ts` (specifically the logic that checks `prevTool` to decide the next tool in a category).
+    - Ensure `src/components/game/ModeIndicator.tsx` remains integrated with the TopBar.
+- **Key Files:**
+    - `src/hooks/useGameKeyboard.ts`
+    - `src/components/game/ModeIndicator.tsx`
+
+### [Integrated Player Guide]
+- **Primary Owner:** Fork
+- **Protection Rules:**
+    - Maintain `PLAYER_GUIDE.md` as the primary source of truth for fork-specific mechanics.
+- **Key Files:**
+    - `PLAYER_GUIDE.md`
 
 ---
 *Note: This registry is maintained by Conductor during 'Robust Upstream Sync' tracks.*
