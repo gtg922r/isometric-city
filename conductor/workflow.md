@@ -134,6 +134,34 @@ All tasks follow a strict lifecycle:
 
 10.  **Announce Completion:** Inform the user that the phase is complete and the checkpoint has been created, with the detailed verification report attached as a git note.
 
+### Upstream Sync Workflow
+
+**Trigger:** This workflow is used when a "Robust Upstream Sync" track is initiated to merge changes from the upstream repository.
+
+1.  **Preparation:**
+    -   Ensure your local repository has the upstream remote configured: `git remote add upstream https://github.com/amilich/isometric-city.git`.
+    -   Fetch the latest changes: `git fetch upstream`.
+
+2.  **Conflict Analysis (Phase 1 of Track):**
+    -   **Context Gathering:** Review the git commit log between your current branch and the upstream target (e.g., `git log HEAD..upstream/main --oneline`). Use this to understand the rationale behind changes.
+    -   **Intersection Check:** Identify all files changed upstream that intersect with features listed in `FORK_FEATURES.md`.
+    -   **Impact Report:** Generate an "Upstream Impact Report" (see Template) listing intersection zones and non-intersecting "Safe" changes.
+
+3.  **Decision Matrix (Phase 1 of Track):**
+    -   For every intersection or logical conflict identified, record a decision in the track's `spec.md` or `plan.md`:
+        -   `TAKE_UPSTREAM`: Overwrite fork logic with upstream changes.
+        -   `KEEP_FORK`: Protect fork feature by discarding or modifying the upstream change.
+        -   `HYBRID`: Manually adapt both feature sets to coexist.
+
+4.  **Implementation (Phase 2 of Track):**
+    -   Perform the merge or rebase (e.g., `git merge upstream/main`).
+    -   Resolve conflicts according to the documented Decision Matrix.
+    -   If `HYBRID` was selected, perform the necessary architectural adaptations.
+
+5.  **Verification (Phase 3 of Track):**
+    -   **Automated:** Run the full project test suite (`npm test`).
+    -   **Manual (Mandatory):** Execute the project's Checkpoint Protocol (manual verification) for all files identified during Conflict Analysis to ensure fork features remain fully functional.
+
 ### Track Completion and Cleanup Workflow
 
 **Trigger:** This protocol is executed after all phases and tasks in a track are marked as completed `[x]`.
