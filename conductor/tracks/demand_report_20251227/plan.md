@@ -13,12 +13,12 @@
 - [x] Task: Add localized actionable advice strings for each demand type. 6e7fb2d
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Demand Report Modal Component' (Protocol in workflow.md) 6e7fb2d
 
-## Phase 3: Integration & Triggers
-- [ ] Task: Update `GameContext` or `Game.tsx` to manage the modal's open/close state.
-- [ ] Task: Modify `src/components/game/TopBar.tsx` to make RCI bars clickable.
-- [ ] Task: Add 'D' key listener to `src/hooks/useGameKeyboard.ts`.
-- [ ] Task: Ensure the modal is accessible and readable on mobile in `src/components/mobile/MobileTopBar.tsx`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Triggers' (Protocol in workflow.md)
+## Phase 3: Integration & Triggers [checkpoint: a67b48e]
+- [x] Task: Update `GameContext` or `Game.tsx` to manage the modal's open/close state. a67b48e
+- [x] Task: Modify `src/components/game/TopBar.tsx` to make RCI bars clickable. a67b48e
+- [x] Task: Add 'D' key listener to `src/hooks/useGameKeyboard.ts`. a67b48e
+- [x] Task: Ensure the modal is accessible and readable on mobile in `src/components/mobile/MobileTopBar.tsx`. a67b48e
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Integration & Triggers' (Protocol in workflow.md) a67b48e
 
 ## Phase 4: Polishing & Cleanup
 - [ ] Task: Update `FORK_FEATURES.md` to include the Demand Report Modal.
