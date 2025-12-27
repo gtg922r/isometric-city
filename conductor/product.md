@@ -39,7 +39,13 @@ IsoCity is an open-source isometric city-building simulation designed to be acce
 
 
 ### Phase 4: Strategic Depth (Completed)
-
 - **Building Upgrades:** Implemented a modular building upgrade system for core service buildings (Power, Water, Police, Fire, Education, Health).
-
 - **Advanced Simulation:** Integrated upgrade effects (range, efficiency, pollution reduction) into the core simulation engine.
+
+## Fork Robustness & Maintenance Philosophy
+As a fork of the original IsoCity project, we are committed to maintaining a robust, feature-rich environment that diverges thoughtfully from the upstream repository.
+
+1.  **Intentional Divergence:** We value the unique features we've added (e.g., Building Upgrades, Advanced Shortcuts) and will protect them during upstream synchronization.
+2.  **Disciplined Synchronization:** Merging from upstream is treated as a first-class process. Every sync track requires a formal conflict analysis and documented decisions to ensure architectural invariants are preserved.
+3.  **Modular Contributions:** Where possible, our divergent features are implemented using modular configurations and utilities to minimize direct conflicts with core upstream simulation and rendering logic.
+4.  **Verification-Led Stability:** We rely on a hybrid verification model (Automated Tests + Manual Checkpoint Protocol) to ensure that neither upstream changes nor local adaptations introduce regressions into our unique toolset.
